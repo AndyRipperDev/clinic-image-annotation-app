@@ -13,6 +13,7 @@ import {
   RouterProvider,
   Navigate,
 } from 'react-router-dom';
+import EditorPage from './pages/Editor/EditorPage';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
         path: 'test',
         element: <Test />,
         loader: testLoader,
+      },
+      {
+        path: 'editor',
+        element: <EditorPage />,
       },
     ],
   },

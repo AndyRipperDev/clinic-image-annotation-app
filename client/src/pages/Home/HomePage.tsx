@@ -1,22 +1,32 @@
 import React from 'react';
-import Button from '@mui/material/Button';
-import { Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Stack } from '@mui/material';
+import FileUploader from '../../components/Uploader/FileUploader';
+import Title from '../../components/Base/Title';
+import Paragraph from '../../components/Base/Paragraph';
 
 const HomePage = (): JSX.Element => {
-  const navigate = useNavigate();
-  const handleClick = (): void => {
-    navigate('/test');
-  };
-
   return (
     <div>
-      <Typography variant="h1" component="h2">
-        Home Page
-      </Typography>
-      <Button variant="contained" onClick={handleClick}>
-        MUI Button
-      </Button>
+      <Stack
+        component="section"
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          py: 10,
+          mx: 6,
+        }}
+      >
+        <Title text={'Image Annotation'} textAlign={'center'} />
+        <Paragraph
+          text={'Choose file and then upload it'}
+          maxWidth={'sm'}
+          mx={0}
+          textAlign={'center'}
+        />
+
+        <FileUploader />
+      </Stack>
     </div>
   );
 };

@@ -1,24 +1,15 @@
 {
-    "compilerOptions": {
-        "esModuleInterop": true,
-        "jsx": "react",
-        "module": "esnext",
-        "target": "esnext",
-        "moduleResolution": "node",
-        "lib": [
-            "dom",
-            "esnext"
-        ],
-        "forceConsistentCasingInFileNames": true,
-        "strictNullChecks": true,
-        "strict": true,
-        "sourceMap": true,
-    },
-    "include": [
-        "src",
-        ".eslintrc.json",
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "lib": ["dom", "esnext"],
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "sourceMap": true
+  },
+  "include": ["src", ".eslintrc.json"],
+  "exclude": ["node_modules"]
 }
