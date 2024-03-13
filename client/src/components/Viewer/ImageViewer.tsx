@@ -31,6 +31,29 @@ const ImageViewer = ({ imageSrc, buttonSrc }): JSX.Element => {
 
     anno.setDrawingTool('rect');
 
+    anno.on('createAnnotation', async (annotation, overrideId) => {
+      console.log('create');
+      console.log(annotation);
+      // POST to the server and receive a new ID
+      // const newId = await server.createAnnotation(annotation);
+
+      // Inject that ID into RecogitoJS
+      // overrideId(newId);
+    });
+
+    anno.on('updateAnnotation', function (annotation, previous) {
+      console.log('update');
+      console.log(annotation);
+      console.log(anno.getAnnotations());
+    });
+
+    anno.on('deleteAnnotation', function (annotation) {
+      console.log('delete');
+      console.log(annotation);
+    });
+
+    anno.loadAnnotations(`${process.env.BACKEND_API_URL}/annotations`);
+
     return () => {
       viewer.destroy();
     };
