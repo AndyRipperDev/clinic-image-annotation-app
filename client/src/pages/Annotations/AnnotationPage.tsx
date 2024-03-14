@@ -10,6 +10,9 @@ const AnnotationPage = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  console.log('is new');
+  console.log(isNewAnnotation);
+
   const selectedImage = 'output.dzi';
 
   if (params.imageUuid === null) {

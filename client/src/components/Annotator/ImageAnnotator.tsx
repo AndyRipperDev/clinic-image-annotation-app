@@ -21,6 +21,8 @@ const ImageAnnotator = ({
   const [annotations, setAnnotations] = useState<Annotorious | null>(null);
   const navigate = useNavigate();
 
+  console.log(isNewAnnotation);
+
   useEffect(() => {
     console.log('a');
     const colorFormatter = (annotation): string => {
