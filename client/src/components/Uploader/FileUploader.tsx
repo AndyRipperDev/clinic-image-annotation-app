@@ -45,8 +45,7 @@ const FileUploader = (): JSX.Element => {
 
       if (response.ok) {
         const responseData = await response.json();
-        localStorage.setItem('fileUUID', JSON.stringify(responseData.fileUUID));
-        navigate('/editor');
+        navigate(`/annotations/${responseData.fileUUID}`);
       } else {
         setErrorMessage('File upload failed');
       }

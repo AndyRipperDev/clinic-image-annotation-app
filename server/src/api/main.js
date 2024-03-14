@@ -11,6 +11,10 @@ router.use((req, res, next) => {
   next();
 });
 
+router.get("/", (req, res) => {
+  res.status(200).json({ message: "Annotation API" });
+});
+
 router.post(
   "/upload",
   preuploadMiddleware,
@@ -35,78 +39,5 @@ router.post(
     }
   }
 );
-
-router.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
-router.get("/annotations", (req, res) => {
-  const obj = [
-    {
-      "@context": "http://www.w3.org/ns/anno.jsonld",
-      type: "Annotation",
-      body: [
-        {
-          type: "TextualBody",
-          value: "ss",
-          purpose: "tagging",
-        },
-      ],
-      target: {
-        source: "http://localhost:8080/undefined",
-        selector: {
-          type: "FragmentSelector",
-          conformsTo: "http://www.w3.org/TR/media-frags/",
-          value:
-            "xywh=pixel:205.80043029785156,1585.39013671875,152.20655822753906,70.743896484375",
-        },
-      },
-      id: "#ab6a05d3-0c3b-47bf-8b0d-a24b1ab79cee",
-    },
-    {
-      "@context": "http://www.w3.org/ns/anno.jsonld",
-      type: "Annotation",
-      body: [
-        {
-          type: "TextualBody",
-          value: "sdsdsss",
-          purpose: "tagging",
-        },
-      ],
-      target: {
-        source: "http://localhost:8080/undefined",
-        selector: {
-          type: "SvgSelector",
-          value:
-            '<svg><circle cx="870.3642883300781" cy="1648.630859375" r="184.44075799805285"></circle></svg>',
-        },
-      },
-      id: "#eb6c57f6-a34b-409b-b342-cc3f53fb3f91",
-    },
-    {
-      "@context": "http://www.w3.org/ns/anno.jsonld",
-      type: "Annotation",
-      body: [
-        {
-          type: "TextualBody",
-          value: "adad",
-          purpose: "tagging",
-        },
-      ],
-      target: {
-        source: "http://localhost:8080/undefined",
-        selector: {
-          type: "FragmentSelector",
-          conformsTo: "http://www.w3.org/TR/media-frags/",
-          value:
-            "xywh=pixel:788.901611328125,269.12493896484375,340.85693359375,370.8695068359375",
-        },
-      },
-      id: "#6ab38859-ff95-4d5c-a9a1-70e48b609195",
-    },
-  ];
-
-  res.status(200).json(obj);
-});
 
 export { router };

@@ -8,13 +8,12 @@ import '@recogito/annotorious-openseadragon/dist/annotorious.min.css';
 import './index.css';
 import App from './App';
 import HomePage from './pages/Home/HomePage';
-import Test, { loader as testLoader } from './components/Test';
 import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
 } from 'react-router-dom';
-import EditorPage from './pages/Editor/EditorPage';
+import AnnotationPage from './pages/Annotations/AnnotationPage';
 
 const router = createBrowserRouter([
   {
@@ -25,14 +24,13 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
+      // {
+      //   path: 'annotations',
+      //   element: <HomePage />,
+      // },
       {
-        path: 'test',
-        element: <Test />,
-        loader: testLoader,
-      },
-      {
-        path: 'editor',
-        element: <EditorPage />,
+        path: 'annotations/:imageUuid',
+        element: <AnnotationPage />,
       },
     ],
   },

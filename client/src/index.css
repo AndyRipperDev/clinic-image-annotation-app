@@ -12,7 +12,7 @@ body {
       monospace;
   }
 
-  .a9s-annotation.testing .a9s-formatter-el .a9s-shape-label-wrapper .a9s-shape-label {
+  .a9s-annotation.dicom-annotation .a9s-formatter-el .a9s-shape-label-wrapper .a9s-shape-label {
     background-color:rgb(170, 0, 0);
   }
 
@@ -20,7 +20,7 @@ body {
     background-color: red
   }
 
-  .a9s-annotation.testing:hover .a9s-formatter-el .a9s-shape-label-wrapper .a9s-shape-label {
+  .a9s-annotation.dicom-annotation:hover .a9s-formatter-el .a9s-shape-label-wrapper .a9s-shape-label {
     background-color:red
   }
 
@@ -65,17 +65,17 @@ body {
   stroke: red;
 }
 
-  .a9s-annotation.testing .a9s-inner {
+  .a9s-annotation.dicom-annotation .a9s-inner {
     stroke:rgb(170, 0, 0);
     stroke-width: 4px;
   }
 
-  .a9s-annotation.testing .a9s-inner:hover {
+  .a9s-annotation.dicom-annotation .a9s-inner:hover {
     stroke:red;
     fill:#cb1e0022;
   }
 
-  .a9s-annotation.testing .a9s-outer:hover {
+  .a9s-annotation.dicom-annotation .a9s-outer:hover {
     stroke:red;
     fill:#cb1e0022;
   }
