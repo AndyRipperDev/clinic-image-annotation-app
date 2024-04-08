@@ -16,7 +16,14 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const InputFileUpload = ({ caption, variant, onChange }): JSX.Element => {
+const InputFileUpload = ({
+  id,
+  name,
+  accept,
+  caption,
+  variant,
+  onChange,
+}): JSX.Element => {
   return (
     <Button
       component="label"
@@ -26,12 +33,22 @@ const InputFileUpload = ({ caption, variant, onChange }): JSX.Element => {
       startIcon={<AttachFileIcon />}
     >
       {caption}
-      <VisuallyHiddenInput type="file" onChange={onChange} />
+      <VisuallyHiddenInput
+        id={id}
+        name={name}
+        accept={accept}
+        type="file"
+        multiple
+        onChange={onChange}
+      />
     </Button>
   );
 };
 
 InputFileUpload.propTypes = {
+  id: PropTypes.string,
+  name: PropTypes.string,
+  accept: PropTypes.string,
   caption: PropTypes.string,
   variant: PropTypes.string,
   onChange: PropTypes.func,

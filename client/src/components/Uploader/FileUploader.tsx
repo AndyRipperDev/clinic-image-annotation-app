@@ -5,19 +5,21 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
+import JSZip from 'jszip';
 
 const FileUploader = (): JSX.Element => {
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const files = (e.target as HTMLInputElement).files;
-    const file = files?.[0];
 
-    if (file != null) {
-      setUploadFile(file);
+    console.log(files);
+
+    if (files != null) {
+      setSelectedFiles(files);
     }
   };
 
@@ -28,24 +30,44 @@ const FileUploader = (): JSX.Element => {
   const handleUpload = async (): Promise<void> => {
     setIsLoading(true);
 
-    if (uploadFile == null) {
+    if (selectedFiles == null) {
       setIsLoading(false);
-      setErrorMessage('File was not chosen');
+      setErrorMessage('Files were not chosen');
       return;
     }
 
+    console.log(selectedFiles);
+    const zip = new JSZip();
+    Array.from(selectedFiles).forEach((file) => {
+      zip.file(file.name, file, {
+        compression: 'DEFLATE',
+        compressionOptions: {
+          level: 9,
+        },
+      });
+    });
+
+    console.log(zip);
+    const content = await zip.generateAsync({ type: 'blob' });
+
+    console.log(content);
     const formData = new FormData();
-    formData.append('uploaded_file', uploadFile);
+    formData.append('dicomFilesZip', content, 'dicom_files.zip');
+
+    console.log(formData);
 
     try {
-      const response = await fetch(`${process.env.BACKEND_API_URL}/upload`, {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        `${process.env.BACKEND_API_URL}/upload/testFolder`,
+        {
+          method: 'POST',
+          body: formData,
+        },
+      );
 
       if (response.ok) {
         const responseData = await response.json();
-        navigate(`/annotations/${responseData.fileUUID}`);
+        // navigate(`/annotations/${responseData.fileUUID}`);
       } else {
         setErrorMessage('File upload failed');
       }
@@ -65,12 +87,15 @@ const FileUploader = (): JSX.Element => {
         alignItems="center"
       >
         <InputFileUpload
-          caption={`${uploadFile === null ? 'Choose file' : 'Change file'}`}
-          variant={`${uploadFile === null ? 'contained' : 'outlined'}`}
+          caption={`${selectedFiles === null ? 'Choose files' : 'Change files'}`}
+          variant={`${selectedFiles === null ? 'contained' : 'outlined'}`}
           onChange={handleFileChange}
+          accept="*/dicom,.dcm, image/dcm, */dcm, .dicom"
+          id="files"
+          name="files"
         />
 
-        {uploadFile !== null && (
+        {selectedFiles !== null && (
           <LoadingButton
             onClick={() => {
               void handleUpload();

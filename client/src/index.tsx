@@ -8,6 +8,8 @@ import '@recogito/annotorious-openseadragon/dist/annotorious.min.css';
 import './index.css';
 import App from './App';
 import HomePage from './pages/Home/HomePage';
+import FoldersPage from './pages/Folders/FoldersPage';
+import FolderNewPage from './pages/Folders/FolderNewPage';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -31,6 +33,14 @@ const router = createBrowserRouter([
       {
         path: 'annotations/:imageUuid',
         element: <AnnotationPage />,
+      },
+      {
+        path: 'folders/',
+        element: <FoldersPage />,
+      },
+      {
+        path: 'folders/new',
+        element: <FolderNewPage />,
       },
     ],
   },

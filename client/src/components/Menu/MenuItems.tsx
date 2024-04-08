@@ -16,10 +16,7 @@ export const mainMenuItems = (
       </ListItemIcon>
       <ListItemText primary="Home" />
     </ListItemButton>
-    <ListItemButton
-      component={Link}
-      to="/annotations/e460d91b-b54d-4c5f-89b4-8115c69868de"
-    >
+    <ListItemButton component={Link} to="/folders">
       <ListItemIcon>
         <FolderIcon />
       </ListItemIcon>
@@ -33,7 +30,7 @@ export const secondaryMenuItems = (
     <ListSubheader component="div" inset>
       Actions
     </ListSubheader>
-    <ListItemButton>
+    <ListItemButton component={Link} to="/folders/new">
       <ListItemIcon>
         <CreateNewFolderIcon />
       </ListItemIcon>

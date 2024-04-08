@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import OpenSeadragon from 'openseadragon';
+import OpenSeadragon, { SUBPIXEL_ROUNDING_OCCURRENCES } from 'openseadragon';
 import PropTypes from 'prop-types';
 import * as Annotorious from '@recogito/annotorious-openseadragon';
 import ShapeLabelsFormatter from '@recogito/annotorious-shape-labels';
@@ -33,6 +33,8 @@ const ImageAnnotator = ({
       id: 'image-annotator',
       prefixUrl: buttonSrcUrl,
       tileSources: imageSrcUrl,
+      subPixelRoundingForTransparency: SUBPIXEL_ROUNDING_OCCURRENCES.ALWAYS,
+      maxZoomPixelRatio: 2,
     });
 
     const config = {
