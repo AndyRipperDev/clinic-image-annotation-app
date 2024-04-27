@@ -1,27 +1,59 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import OpenSeadragon, { SUBPIXEL_ROUNDING_OCCURRENCES } from 'openseadragon';
 import PropTypes from 'prop-types';
 import * as Annotorious from '@recogito/annotorious-openseadragon';
 import ShapeLabelsFormatter from '@recogito/annotorious-shape-labels';
 import Toolbar from '@recogito/annotorious-toolbar';
 import SelectorPack from '@recogito/annotorious-selector-pack';
-import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import SaveIcon from '@mui/icons-material/Save';
 import { useNavigate } from 'react-router-dom';
+import { MenuContext } from '../../context/MenuContext';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import LayersClearIcon from '@mui/icons-material/LayersClear';
+import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
+import {
+  Backdrop,
+  CircularProgress,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  ToggleButton,
+  ToggleButtonGroup,
+} from '@mui/material';
+import SnackbarAlert from '../Feedback/SnackbarAlert';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import Crop32Icon from '@mui/icons-material/Crop32';
+import GestureIcon from '@mui/icons-material/Gesture';
+import PolylineIcon from '@mui/icons-material/Polyline';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import BlurCircularIcon from '@mui/icons-material/BlurCircular';
+import LinearScaleIcon from '@mui/icons-material/LinearScale';
+import AddIcon from '@mui/icons-material/Add';
 
 const ImageAnnotator = ({
   buttonSrcUrl,
   imageSrcUrl,
-  imageUuid,
+  folderName,
+  dicomUuid,
   isNewAnnotation,
 }): JSX.Element => {
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [annotationCreated, setAnnotationCreated] = useState<boolean>(
+    !(isNewAnnotation as boolean),
+  );
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [annotations, setAnnotations] = useState<Annotorious | null>(null);
+  const [drawingTool, setDrawingTool] = useState<string | null>('freehand');
   const navigate = useNavigate();
 
+  const { menuButtons, setMenuButtons } = useContext(MenuContext);
+
   console.log(isNewAnnotation);
+  console.log(`is new:${isNewAnnotation}`);
+  console.log(`is newsda:${annotationCreated}`);
 
   useEffect(() => {
     console.log('a');
@@ -35,18 +67,24 @@ const ImageAnnotator = ({
       tileSources: imageSrcUrl,
       subPixelRoundingForTransparency: SUBPIXEL_ROUNDING_OCCURRENCES.ALWAYS,
       maxZoomPixelRatio: 2,
+      gestureSettingsMouse: {
+        clickToZoom: false,
+      },
     });
 
     const config = {
       allowEmpty: true,
+      disableEditor: true,
+      // gigapixelMode: true,
       formatters: [ShapeLabelsFormatter(), colorFormatter],
     }; // Optional plugin config options
 
     const anno = Annotorious(viewer, config);
     SelectorPack(anno);
-    Toolbar(anno, document.getElementById('image-annotator-toolbar-container'));
+    // Toolbar(anno, document.getElementById('image-annotator-toolbar-container'));
 
-    anno.setDrawingTool('rect');
+    // anno.setDrawingEnabled(true);
+    anno.setDrawingTool('freehand');
 
     anno.on('createAnnotation', async (annotation, overrideId) => {
       console.log('create');
@@ -73,7 +111,7 @@ const ImageAnnotator = ({
 
     if (isNewAnnotation === false) {
       anno.loadAnnotations(
-        `${process.env.BACKEND_API_URL}/annotations/${imageUuid}`,
+        `${process.env.BACKEND_API_URL}/folders/${folderName}/annotations/${dicomUuid}`,
       );
     }
 
@@ -85,12 +123,12 @@ const ImageAnnotator = ({
   }, [imageSrcUrl]);
 
   const handleSave = async (): Promise<void> => {
-    setIsSaving(true);
+    setIsLoading(true);
 
     const annotationData = annotations.getAnnotations();
     console.log(JSON.stringify(annotationData));
 
-    if (isNewAnnotation === true) {
+    if (!annotationCreated) {
       console.log('post');
 
       // const formData = new FormData();
@@ -102,7 +140,7 @@ const ImageAnnotator = ({
       // console.log(formData);
       try {
         const response = await fetch(
-          `${process.env.BACKEND_API_URL}/annotations/`,
+          `${process.env.BACKEND_API_URL}/folders/${folderName}/annotations`,
           // {
           //   method: 'POST',
           //   headers: { 'Content-Type': 'application/json' },
@@ -114,8 +152,8 @@ const ImageAnnotator = ({
               'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: new URLSearchParams({
-              imageUuid,
-              annotations: JSON.stringify(annotationData),
+              dicomUuid,
+              annotationData: JSON.stringify(annotationData),
             }),
             // body: JSON.stringify(annotationData),
           },
@@ -124,38 +162,466 @@ const ImageAnnotator = ({
         if (response.ok) {
           // const responseData = await response.json();
           navigate(`/`);
+          setAnnotationCreated(true);
         } else {
           setErrorMessage('File upload failed');
         }
       } catch (error) {
-        setErrorMessage(`Error uploading file: ${error}`);
+        setErrorMessage(`Error uploading file: ${error.message}`);
       } finally {
-        setIsSaving(false);
+        setIsLoading(false);
       }
     } else {
       console.log('put');
-      setIsSaving(false);
+      setIsLoading(false);
     }
     console.log(annotations.getAnnotations());
-    // setIsSaving(false);
+    // setIsLoading(false);
+  };
+
+  const handleSaveNew = async (): Promise<void> => {
+    setIsLoading(true);
+
+    const annotationData = annotations.getAnnotations();
+
+    try {
+      let response = new Response();
+      if (!annotationCreated) {
+        response = await fetch(
+          `${process.env.BACKEND_API_URL}/folders/${folderName}/annotations`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              dicomUuid,
+              annotationData: JSON.stringify(annotationData),
+            }),
+          },
+        );
+      } else {
+        response = await fetch(
+          `${process.env.BACKEND_API_URL}/folders/${folderName}/annotations/${dicomUuid}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              annotationData: JSON.stringify(annotationData),
+            }),
+          },
+        );
+      }
+
+      if (response.ok) {
+        setAnnotationCreated(true);
+        setSnackbarOpen(true);
+      } else {
+        setErrorMessage('File upload failed');
+      }
+    } catch (error) {
+      setErrorMessage(`Error uploading file: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveAndExit = async (): Promise<void> => {
+    setIsLoading(true);
+
+    const annotationData = annotations.getAnnotations();
+
+    try {
+      let response = new Response();
+      if (!annotationCreated) {
+        response = await fetch(
+          `${process.env.BACKEND_API_URL}/folders/${folderName}/annotations`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              dicomUuid,
+              annotationData: JSON.stringify(annotationData),
+            }),
+          },
+        );
+      } else {
+        response = await fetch(
+          `${process.env.BACKEND_API_URL}/folders/${folderName}/annotations/${dicomUuid}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              annotationData: JSON.stringify(annotationData),
+            }),
+          },
+        );
+      }
+
+      if (response.ok) {
+        navigate(`/folders/${folderName}`);
+
+        setAnnotationCreated(true);
+      } else {
+        setErrorMessage('File upload failed');
+      }
+    } catch (error) {
+      setErrorMessage(`Error uploading file: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (): Promise<void> => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(
+        `${process.env.BACKEND_API_URL}/folders/${folderName}/annotations/${dicomUuid}`,
+        {
+          method: 'DELETE',
+        },
+      );
+
+      if (response.ok) {
+        navigate(`/folders/${folderName}`);
+      } else {
+        const data = await response.json();
+        setErrorMessage(data?.error as string);
+      }
+    } catch (error) {
+      setErrorMessage(error.message as string);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClear = (): void => {
+    annotations.clearAnnotations();
+  };
+
+  const handleSetDrawingRect = (): void => {
+    annotations.setDrawingEnabled(true);
+    annotations.setDrawingTool('rect');
+  };
+
+  const handleSetDrawingLine = (): void => {
+    annotations.setDrawingTool('line');
+  };
+
+  const handleSetDrawingPolygon = (): void => {
+    annotations.setDrawingTool('polygon');
+  };
+
+  const handleSetDrawingPoint = (): void => {
+    annotations.setDrawingTool('point');
+  };
+
+  const handleSetDrawingCircle = (): void => {
+    annotations.setDrawingTool('circle');
+  };
+  const handleSetDrawingEllipse = (): void => {
+    annotations.setDrawingTool('ellipse');
+  };
+
+  const handleSetDrawingFreehand = (): void => {
+    annotations.setDrawingTool('freehand');
+  };
+
+  useEffect(() => {
+    const buttons = [
+      {
+        name: 'Save and Exit',
+        handler: handleSaveAndExit,
+        icon: <ContentPasteGoIcon />,
+      },
+      { name: 'Save', handler: handleSaveNew, icon: <SaveIcon /> },
+      { name: 'Clear', handler: handleClear, icon: <LayersClearIcon /> },
+      { name: 'Delete', handler: handleDelete, icon: <DeleteForeverIcon /> },
+    ];
+
+    const drawingTools = [
+      {
+        name: 'Point',
+        handler: handleSetDrawingPoint,
+        icon: <GpsFixedIcon />,
+      },
+      {
+        name: 'Line',
+        handler: handleSetDrawingLine,
+        icon: <LinearScaleIcon />,
+      },
+      {
+        name: 'Freehand',
+        handler: handleSetDrawingFreehand,
+        icon: <GestureIcon />,
+      },
+      {
+        name: 'Polygon',
+        handler: handleSetDrawingPolygon,
+        icon: <PolylineIcon />,
+      },
+      {
+        name: 'Rectangle',
+        handler: handleSetDrawingRect,
+        icon: <Crop32Icon />,
+      },
+      {
+        name: 'Circle',
+        handler: handleSetDrawingCircle,
+        icon: <RadioButtonUncheckedIcon />,
+      },
+      {
+        name: 'Ellipse',
+        handler: handleSetDrawingEllipse,
+        icon: <BlurCircularIcon />,
+      },
+    ];
+
+    const drawingToolList = (
+      <ToggleButtonGroup
+        orientation="vertical"
+        value={drawingTool}
+        exclusive
+        onChange={handleSetDrawingTool}
+        sx={{ width: '100%' }}
+      >
+        <ListItemButton
+          component={ToggleButton}
+          value={'point'}
+          sx={{ textTransform: 'none' }}
+        >
+          <ListItemIcon>
+            {' '}
+            <GpsFixedIcon />
+            {/* <AddIcon /> */}
+          </ListItemIcon>
+          <ListItemText primary={'Point'} />
+        </ListItemButton>
+        <ListItemButton
+          component={ToggleButton}
+          value={'line'}
+          sx={{ textTransform: 'none' }}
+        >
+          <ListItemIcon>
+            {' '}
+            <LinearScaleIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Line'} />
+        </ListItemButton>
+        <ListItemButton
+          component={ToggleButton}
+          value={'freehand'}
+          sx={{ textTransform: 'none' }}
+        >
+          <ListItemIcon>
+            {' '}
+            <GestureIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Freehand'} />
+        </ListItemButton>
+        <ListItemButton
+          component={ToggleButton}
+          value={'polygon'}
+          sx={{ textTransform: 'none' }}
+        >
+          <ListItemIcon>
+            {' '}
+            <PolylineIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Polygon'} />
+        </ListItemButton>
+        <ListItemButton
+          component={ToggleButton}
+          value={'rect'}
+          sx={{ textTransform: 'none' }}
+        >
+          <ListItemIcon>
+            {' '}
+            <Crop32Icon />
+          </ListItemIcon>
+          <ListItemText primary={'Rectangle'} />
+        </ListItemButton>
+        <ListItemButton
+          component={ToggleButton}
+          value={'circle'}
+          sx={{ textTransform: 'none' }}
+        >
+          <ListItemIcon>
+            {' '}
+            <RadioButtonUncheckedIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Circle'} />
+        </ListItemButton>{' '}
+        <ListItemButton
+          component={ToggleButton}
+          value={'ellipse'}
+          sx={{ textTransform: 'none' }}
+        >
+          <ListItemIcon>
+            {' '}
+            <BlurCircularIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Ellipse'} />
+        </ListItemButton>
+      </ToggleButtonGroup>
+    );
+
+    setMenuButtons({ buttons, drawingTools, drawingToolList });
+    return () => {
+      setMenuButtons(null);
+    };
+  }, [annotations, annotationCreated, drawingTool]);
+
+  const handleSetDrawingTool = (
+    event: React.MouseEvent<HTMLElement>,
+    newDrawingTool: string | null,
+  ): void => {
+    if (newDrawingTool === null) return;
+
+    setDrawingTool(newDrawingTool);
+
+    // annotations.setDrawingEnabled(true);
+    annotations.setDrawingTool(newDrawingTool);
   };
 
   return (
     <>
-      <LoadingButton
-        onClick={() => {
-          void handleSave();
-        }}
-        loading={isSaving}
-        loadingPosition="start"
-        startIcon={<SaveIcon />}
-        variant="contained"
+      {errorMessage !== null && (
+        <Alert variant="outlined" severity="error">
+          {errorMessage}
+        </Alert>
+      )}
+      <SnackbarAlert
+        text={'Saved'}
+        open={snackbarOpen}
+        setOpen={setSnackbarOpen}
+      />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
       >
-        {isSaving ? 'Saving...' : 'Save'}
-      </LoadingButton>
-      {errorMessage !== null && <Alert severity="error">{errorMessage}</Alert>}
-      <div id="image-annotator-toolbar-container"></div>
-      <div id="image-annotator" style={{ width: '100%', height: '90vh' }}></div>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      {/* <List component="nav">
+        <ToggleButtonGroup
+          orientation="vertical"
+          value={drawingTool}
+          exclusive
+          onChange={handleSetDrawingTool}
+        >
+          <ListItemButton
+            component={ToggleButton}
+            value={'point'}
+            sx={{ textTransform: 'none' }}
+          >
+            <ListItemIcon>
+              {' '}
+              <GpsFixedIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Point'} />
+          </ListItemButton>
+          <ListItemButton
+            component={ToggleButton}
+            value={'line'}
+            sx={{ textTransform: 'none' }}
+          >
+            <ListItemIcon>
+              {' '}
+              <LinearScaleIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Line'} />
+          </ListItemButton>
+          <ListItemButton
+            component={ToggleButton}
+            value={'freehand'}
+            sx={{ textTransform: 'none' }}
+          >
+            <ListItemIcon>
+              {' '}
+              <GestureIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Freehand'} />
+          </ListItemButton>
+          <ListItemButton
+            component={ToggleButton}
+            value={'polygon'}
+            sx={{ textTransform: 'none' }}
+          >
+            <ListItemIcon>
+              {' '}
+              <PolylineIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Polygon'} />
+          </ListItemButton>
+          <ListItemButton
+            component={ToggleButton}
+            value={'rect'}
+            sx={{ textTransform: 'none' }}
+          >
+            <ListItemIcon>
+              {' '}
+              <Crop32Icon />
+            </ListItemIcon>
+            <ListItemText primary={'Rect'} />
+          </ListItemButton>
+          <ListItemButton
+            component={ToggleButton}
+            value={'circle'}
+            sx={{ textTransform: 'none' }}
+          >
+            <ListItemIcon>
+              {' '}
+              <RadioButtonUncheckedIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Circle'} />
+          </ListItemButton>{' '}
+          <ListItemButton
+            component={ToggleButton}
+            value={'ellipse'}
+            sx={{ textTransform: 'none' }}
+          >
+            <ListItemIcon>
+              {' '}
+              <BlurCircularIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Ellipse'} />
+          </ListItemButton> */}
+      {/* <ToggleButton value="point">
+            <GpsFixedIcon />
+          </ToggleButton>
+          <ToggleButton value="line">
+            <LinearScaleIcon />
+          </ToggleButton>
+          <ToggleButton value="freehand">
+            <GestureIcon />
+          </ToggleButton>
+          <ToggleButton value="polygon">
+            <PolylineIcon />
+          </ToggleButton>
+          <ToggleButton value="rect">
+            <Crop32Icon />
+          </ToggleButton>
+          <ToggleButton value="circle">
+            <RadioButtonUncheckedIcon />
+          </ToggleButton>
+          <ToggleButton value="ellipse">
+            <BlurCircularIcon />
+          </ToggleButton> */}
+      {/* </ToggleButtonGroup> */}
+      {/* </List> */}
+      {/* <div id="image-annotator-toolbar-container"></div> */}
+      <div
+        id="image-annotator"
+        style={{ width: '100%', height: '100vh' }}
+      ></div>
     </>
   );
 };
@@ -163,7 +629,8 @@ const ImageAnnotator = ({
 ImageAnnotator.propTypes = {
   buttonSrcUrl: PropTypes.string,
   imageSrcUrl: PropTypes.string,
-  imageUuid: PropTypes.string,
+  folderName: PropTypes.string,
+  dicomUuid: PropTypes.string,
   isNewAnnotation: PropTypes.bool,
 };
 

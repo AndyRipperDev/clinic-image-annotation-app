@@ -6,8 +6,9 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import JSZip from 'jszip';
+import PropTypes from 'prop-types';
 
-const FileUploader = (): JSX.Element => {
+const FileUploader = ({ folderName }): JSX.Element => {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -36,6 +37,12 @@ const FileUploader = (): JSX.Element => {
       return;
     }
 
+    if (folderName == null) {
+      setIsLoading(false);
+      setErrorMessage('Folder Name is empty');
+      return;
+    }
+
     console.log(selectedFiles);
     const zip = new JSZip();
     Array.from(selectedFiles).forEach((file) => {
@@ -58,7 +65,8 @@ const FileUploader = (): JSX.Element => {
 
     try {
       const response = await fetch(
-        `${process.env.BACKEND_API_URL}/upload/testFolder`,
+        // `${process.env.BACKEND_API_URL}/upload/testFolder`,
+        `${process.env.BACKEND_API_URL}/folders/${folderName}/dicom`,
         {
           method: 'POST',
           body: formData,
@@ -112,6 +120,10 @@ const FileUploader = (): JSX.Element => {
       {errorMessage !== null && <Alert severity="error">{errorMessage}</Alert>}
     </Stack>
   );
+};
+
+FileUploader.propTypes = {
+  folderName: PropTypes.string,
 };
 
 export default FileUploader;

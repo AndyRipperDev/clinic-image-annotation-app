@@ -10,6 +10,7 @@ import App from './App';
 import HomePage from './pages/Home/HomePage';
 import FoldersPage from './pages/Folders/FoldersPage';
 import FolderNewPage from './pages/Folders/FolderNewPage';
+import FoldersDetailPage from './pages/Folders/FoldersDetailPage';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -31,7 +32,7 @@ const router = createBrowserRouter([
       //   element: <HomePage />,
       // },
       {
-        path: 'annotations/:imageUuid',
+        path: 'annotations/:folderName/:dicomUuid',
         element: <AnnotationPage />,
       },
       {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: 'folders/new',
         element: <FolderNewPage />,
+      },
+      {
+        path: 'folders/:folderName',
+        element: <FoldersDetailPage />,
       },
     ],
   },

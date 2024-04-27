@@ -8,8 +8,18 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { mainMenuItems, secondaryMenuItems } from './MenuItems';
+import { mainMenuItems } from './MenuItems';
 import { Outlet } from 'react-router-dom';
+import { MenuContext } from '../../context/MenuContext';
+import {
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  ListSubheader,
+  Tooltip,
+} from '@mui/material';
+import { type IContextMenuButtons } from '../../interfaces/menuContext';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const drawerWidth: number = 240;
 
@@ -41,44 +51,107 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Menu(): JSX.Element {
   const [open, setOpen] = React.useState(true);
+  const [menuButtons, setMenuButtons] =
+    React.useState<IContextMenuButtons | null>(null);
+  const value = { menuButtons, setMenuButtons };
+
+  console.log(menuButtons);
+
   const toggleDrawer = (): void => {
     setOpen(!open);
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <Drawer variant="permanent" open={open}>
-        <Toolbar
+    <MenuContext.Provider value={value}>
+      <Box sx={{ display: 'flex', padding: 0, height: '100vh' }}>
+        <Drawer variant="permanent" open={open}>
+          <Toolbar
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <IconButton onClick={toggleDrawer}>
+              {open ? <ChevronLeftIcon /> : <MenuIcon />}
+            </IconButton>
+          </Toolbar>
+          <Divider />
+          <List component="nav">
+            {mainMenuItems}
+            {menuButtons !== null && (
+              <>
+                {menuButtons?.drawingToolList !== null && (
+                  <>
+                    <Divider sx={{ my: 1 }} />
+                    {open && (
+                      <ListSubheader
+                        component="div"
+                        inset
+                        sx={{ display: 'flex', alignItems: 'center' }}
+                      >
+                        Drawing Tools
+                        <Tooltip title="Hold 'Shift' key to annotate, then click to the image to confirm annotation">
+                          <InfoOutlinedIcon sx={{ fontSize: 18, mx: 1.5 }} />
+                        </Tooltip>
+                      </ListSubheader>
+                    )}
+
+                    {menuButtons?.drawingToolList}
+                  </>
+                )}
+                {/* {menuButtons?.drawingTools?.length !== 0 && (
+                  <>
+                    <Divider sx={{ my: 1 }} />
+                    <ListSubheader component="div" inset>
+                      Drawing Tools
+                    </ListSubheader>
+                    {menuButtons?.drawingTools?.map((button, index) => (
+                      <ListItemButton key={index} onClick={button.handler}>
+                        <ListItemIcon>{button.icon}</ListItemIcon>
+                        <ListItemText primary={button.name} />
+                      </ListItemButton>
+                    ))}
+                  </>
+                )} */}
+                {menuButtons?.buttons?.length !== 0 && (
+                  <>
+                    <Divider sx={{ my: 1 }} />
+
+                    {open && (
+                      <ListSubheader component="div" inset>
+                        Options
+                      </ListSubheader>
+                    )}
+                    {menuButtons?.buttons?.map((button, index) => (
+                      <ListItemButton key={index} onClick={button.handler}>
+                        <ListItemIcon>{button.icon}</ListItemIcon>
+                        <ListItemText primary={button.name} />
+                      </ListItemButton>
+                    ))}
+                  </>
+                )}
+              </>
+            )}
+          </List>
+        </Drawer>
+        <Box
+          component="main"
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
+            flexGrow: 1,
+            height: '100vh',
+            overflow: 'auto',
           }}
         >
-          <IconButton onClick={toggleDrawer}>
-            {open ? <ChevronLeftIcon /> : <MenuIcon />}
-          </IconButton>
-        </Toolbar>
-        <Divider />
-        <List component="nav">
-          {mainMenuItems}
-          <Divider sx={{ my: 1 }} />
-          {secondaryMenuItems}
-        </List>
-      </Drawer>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          height: '100vh',
-          overflow: 'auto',
-        }}
-      >
-        <Toolbar />
-        <Box sx={{ mt: 4, mb: 4, mr: 4, ml: 4 }}>
-          <Outlet />
+          <Box
+            sx={
+              menuButtons === null ? { mt: 2, mb: 4, mr: 4, ml: 4 } : { m: 0 }
+            }
+          >
+            <Outlet />
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </MenuContext.Provider>
   );
 }

@@ -13,69 +13,91 @@ body {
   }
 
   .a9s-annotation.dicom-annotation .a9s-formatter-el .a9s-shape-label-wrapper .a9s-shape-label {
-    background-color:rgb(170, 0, 0);
+    /* background-color:rgb(170, 0, 0); */
+    background-color: red;
   }
 
   .a9s-annotation.editable .a9s-formatter-el .a9s-shape-label-wrapper .a9s-shape-label {
-    background-color: red
+    /* background-color: red; */
+    background-color:rgb(170, 0, 0);
   }
 
   .a9s-annotation.dicom-annotation:hover .a9s-formatter-el .a9s-shape-label-wrapper .a9s-shape-label {
-    background-color:red
+    /* background-color:red; */
+    background-color:rgb(170, 0, 0);
   }
 
   .a9s-annotationlayer .a9s-annotation .a9s-inner, 
   .a9s-annotationlayer .a9s-selection .a9s-inner {
     stroke-width: 4px;
-    stroke: red;
-    fill:#cb1e0022;
+    /* stroke: red; */
+    stroke: rgb(170, 0, 0);
+    /* fill:#cb1e0022; */
+    fill:transparent;
 }
 
 .a9s-annotation .a9s-inner:hover {
   stroke: #00fff7;
-  fill:#cb1e0022;
+  /* fill:#cb1e0022; */
+  fill:transparent;
 }
 
 .a9s-annotation .a9s-inner {
   stroke: #00fff7;
-  fill:#cb1e0022;
+  /* fill:#cb1e0022; */
+  fill:transparent;
 }
 
 .a9s-annotation.editable .a9s-inner, .a9s-annotation.editable .a9s-inner:hover {
-  stroke: red;
+  /* stroke: red; */
+  stroke: rgb(170, 0, 0);
   cursor: move !important;
-  fill:#cb1e0022;
+  /* fill:#cb1e0022; */
+  
+  fill:transparent;
 }
 
 .a9s-handle .a9s-handle-inner {
-  stroke: red;
+  /* stroke: red; */
+  stroke: rgb(170, 0, 0);
   fill: red;
 }
 .a9s-handle .a9s-handle-inner:hover {
-  stroke: rgb(170, 0, 0);
+  /* stroke: rgb(170, 0, 0); */
+  stroke: red;
+  /* fill: red; */
   fill: rgb(170, 0, 0);
 }
 
 .a9s-handle .a9s-handle-outer {
-  stroke: red;
+  /* stroke: red; */
+  stroke: rgb(170, 0, 0);
   fill: red;
+  /* fill: rgb(170, 0, 0); */
 }
 
 .a9s-annotation.selected .a9s-inner, .a9s-selection .a9s-inner, .a9s-annotation.selected .a9s-inner:hover, .a9s-selection .a9s-inner:hover {
-  stroke: red;
+  /* stroke: red; */
+  stroke: rgb(170, 0, 0);
 }
 
   .a9s-annotation.dicom-annotation .a9s-inner {
-    stroke:rgb(170, 0, 0);
+    /* stroke:rgb(170, 0, 0); */
+    stroke: red;
     stroke-width: 4px;
   }
 
   .a9s-annotation.dicom-annotation .a9s-inner:hover {
-    stroke:red;
-    fill:#cb1e0022;
+    /* stroke:red; */
+    stroke: rgb(170, 0, 0);
+    /* fill:#cb1e0022; */
+    
+    fill:transparent;
   }
 
   .a9s-annotation.dicom-annotation .a9s-outer:hover {
-    stroke:red;
-    fill:#cb1e0022;
+    /* stroke:red; */
+    stroke: rgb(170, 0, 0);
+    /* fill:#cb1e0022; */
+    fill:transparent;
   }

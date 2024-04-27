@@ -15,14 +15,15 @@ const AnnotationPage = (): JSX.Element => {
 
   const selectedImage = 'output.dzi';
 
-  if (params.imageUuid === null) {
+  if (params.folderName === null || params.dicomUuid === null) {
     navigate('/');
   } else {
-    console.log(params.imageUuid);
+    console.log(params.folderName);
+    console.log(params.dicomUuid);
   }
 
   const buttonUrl = `${process.env.BACKEND_API_URL}/viewer/images/`;
-  const dziUrl = `${process.env.BACKEND_API_URL}/dzi_images/${params.imageUuid}/${selectedImage}`;
+  const dziUrl = `${process.env.BACKEND_API_URL}/dzi_images/${params.dicomUuid}/${selectedImage}`;
 
   useEffect(() => {
     let ignore = false;
@@ -31,7 +32,7 @@ const AnnotationPage = (): JSX.Element => {
       setIsLoading(true);
 
       void fetch(
-        `${process.env.BACKEND_API_URL}/annotations/${params.imageUuid}`,
+        `${process.env.BACKEND_API_URL}/folders/${params.folderName}/annotations/${params.dicomUuid}`,
       )
         .then(async (response) => {
           if (response.status !== 404) {
@@ -63,7 +64,8 @@ const AnnotationPage = (): JSX.Element => {
             <ImageAnnotator
               buttonSrcUrl={buttonUrl}
               imageSrcUrl={dziUrl}
-              imageUuid={params.imageUuid}
+              folderName={params.folderName}
+              dicomUuid={params.dicomUuid}
               isNewAnnotation={isNewAnnotation}
             />
           )}

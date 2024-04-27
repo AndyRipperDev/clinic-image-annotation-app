@@ -1,11 +1,10 @@
 import React from 'react';
 import { Button, ButtonGroup, Stack } from '@mui/material';
-// import FileUploader from '../../components/Uploader/FileUploader';
 import Title from '../../components/Base/Title';
 import Paragraph from '../../components/Base/Paragraph';
 import FolderIcon from '@mui/icons-material/Folder';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import { Link } from 'react-router-dom';
+import FolderCreateModal from '../../components/Modals/FolderCreateModal';
 
 const HomePage = (): JSX.Element => {
   return (
@@ -29,7 +28,7 @@ const HomePage = (): JSX.Element => {
         /> */}
         <Paragraph
           text={
-            'Create new folder with DICOM images or show already created folders'
+            'Create new folder with DICOM images or view already created folders'
           }
           maxWidth={'sm'}
           mx={0}
@@ -37,13 +36,14 @@ const HomePage = (): JSX.Element => {
         />
 
         <ButtonGroup variant="outlined" aria-label="Basic button group">
-          <Button
-            component={Link}
-            to="/folders/new"
+          {/* <Button
+            // component={Link}
+            // to="/folders/new"
             startIcon={<CreateNewFolderIcon />}
           >
             Create Folder
-          </Button>
+          </Button> */}
+          <FolderCreateModal />
           <Button component={Link} to="/folders" startIcon={<FolderIcon />}>
             Show Folders
           </Button>

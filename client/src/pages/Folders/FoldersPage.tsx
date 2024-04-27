@@ -1,32 +1,27 @@
 import React from 'react';
 import { Stack } from '@mui/material';
-import FileUploader from '../../components/Uploader/FileUploader';
 import Title from '../../components/Base/Title';
-import Paragraph from '../../components/Base/Paragraph';
+import FoldersDataTable from '../../components/DataTable/FoldersDataTable';
+import FolderCreateModal from '../../components/Modals/FolderCreateModal';
 
 const FoldersPage = (): JSX.Element => {
   return (
     <div>
+      <Title text={'Folders'} textAlign={'left'} />
       <Stack
         component="section"
-        direction="column"
-        justifyContent="center"
+        direction="row"
+        justifyContent="left"
         alignItems="center"
         sx={{
-          py: 10,
-          mx: 6,
+          pt: 6,
+          pb: 2,
         }}
       >
-        <Title text={'Image Annotation'} textAlign={'center'} />
-        <Paragraph
-          text={'Choose file and then upload it'}
-          maxWidth={'sm'}
-          mx={0}
-          textAlign={'center'}
-        />
-
-        <FileUploader />
+        <FolderCreateModal />
       </Stack>
+
+      <FoldersDataTable />
     </div>
   );
 };
