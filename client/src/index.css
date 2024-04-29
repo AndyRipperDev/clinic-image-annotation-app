@@ -57,6 +57,11 @@ body {
   fill:transparent;
 }
 
+.a9s-annotation.a9s-point .a9s-outer {
+  stroke: red;
+  fill: red;
+}
+
 .a9s-handle .a9s-handle-inner {
   /* stroke: red; */
   stroke: rgb(170, 0, 0);

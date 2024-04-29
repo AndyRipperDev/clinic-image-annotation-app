@@ -11,13 +11,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainMenuItems } from './MenuItems';
 import { Outlet } from 'react-router-dom';
 import { MenuContext } from '../../context/MenuContext';
-import {
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  ListSubheader,
-  Tooltip,
-} from '@mui/material';
+import { ListSubheader, Tooltip } from '@mui/material';
 import { type IContextMenuButtons } from '../../interfaces/menuContext';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
@@ -100,21 +94,7 @@ export default function Menu(): JSX.Element {
                     {menuButtons?.drawingToolList}
                   </>
                 )}
-                {/* {menuButtons?.drawingTools?.length !== 0 && (
-                  <>
-                    <Divider sx={{ my: 1 }} />
-                    <ListSubheader component="div" inset>
-                      Drawing Tools
-                    </ListSubheader>
-                    {menuButtons?.drawingTools?.map((button, index) => (
-                      <ListItemButton key={index} onClick={button.handler}>
-                        <ListItemIcon>{button.icon}</ListItemIcon>
-                        <ListItemText primary={button.name} />
-                      </ListItemButton>
-                    ))}
-                  </>
-                )} */}
-                {menuButtons?.buttons?.length !== 0 && (
+                {menuButtons?.optionList !== null && (
                   <>
                     <Divider sx={{ my: 1 }} />
 
@@ -123,12 +103,8 @@ export default function Menu(): JSX.Element {
                         Options
                       </ListSubheader>
                     )}
-                    {menuButtons?.buttons?.map((button, index) => (
-                      <ListItemButton key={index} onClick={button.handler}>
-                        <ListItemIcon>{button.icon}</ListItemIcon>
-                        <ListItemText primary={button.name} />
-                      </ListItemButton>
-                    ))}
+
+                    {menuButtons?.optionList}
                   </>
                 )}
               </>

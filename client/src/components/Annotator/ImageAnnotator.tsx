@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import * as Annotorious from '@recogito/annotorious-openseadragon';
 import ShapeLabelsFormatter from '@recogito/annotorious-shape-labels';
 import Toolbar from '@recogito/annotorious-toolbar';
-import SelectorPack from '@recogito/annotorious-selector-pack';
+// import SelectorPack from '@recogito/annotorious-selector-pack';
+import SelectorPack from '../../plugins/annotorious-selector-pack';
 import Alert from '@mui/material/Alert';
 import SaveIcon from '@mui/icons-material/Save';
 import { useNavigate } from 'react-router-dom';
@@ -306,83 +307,47 @@ const ImageAnnotator = ({
     annotations.clearAnnotations();
   };
 
-  const handleSetDrawingRect = (): void => {
-    annotations.setDrawingEnabled(true);
-    annotations.setDrawingTool('rect');
-  };
-
-  const handleSetDrawingLine = (): void => {
-    annotations.setDrawingTool('line');
-  };
-
-  const handleSetDrawingPolygon = (): void => {
-    annotations.setDrawingTool('polygon');
-  };
-
-  const handleSetDrawingPoint = (): void => {
-    annotations.setDrawingTool('point');
-  };
-
-  const handleSetDrawingCircle = (): void => {
-    annotations.setDrawingTool('circle');
-  };
-  const handleSetDrawingEllipse = (): void => {
-    annotations.setDrawingTool('ellipse');
-  };
-
-  const handleSetDrawingFreehand = (): void => {
-    annotations.setDrawingTool('freehand');
-  };
-
   useEffect(() => {
-    const buttons = [
-      {
-        name: 'Save and Exit',
-        handler: handleSaveAndExit,
-        icon: <ContentPasteGoIcon />,
-      },
-      { name: 'Save', handler: handleSaveNew, icon: <SaveIcon /> },
-      { name: 'Clear', handler: handleClear, icon: <LayersClearIcon /> },
-      { name: 'Delete', handler: handleDelete, icon: <DeleteForeverIcon /> },
-    ];
-
-    const drawingTools = [
-      {
-        name: 'Point',
-        handler: handleSetDrawingPoint,
-        icon: <GpsFixedIcon />,
-      },
-      {
-        name: 'Line',
-        handler: handleSetDrawingLine,
-        icon: <LinearScaleIcon />,
-      },
-      {
-        name: 'Freehand',
-        handler: handleSetDrawingFreehand,
-        icon: <GestureIcon />,
-      },
-      {
-        name: 'Polygon',
-        handler: handleSetDrawingPolygon,
-        icon: <PolylineIcon />,
-      },
-      {
-        name: 'Rectangle',
-        handler: handleSetDrawingRect,
-        icon: <Crop32Icon />,
-      },
-      {
-        name: 'Circle',
-        handler: handleSetDrawingCircle,
-        icon: <RadioButtonUncheckedIcon />,
-      },
-      {
-        name: 'Ellipse',
-        handler: handleSetDrawingEllipse,
-        icon: <BlurCircularIcon />,
-      },
-    ];
+    const optionList = (
+      <>
+        <ListItemButton
+          onClick={() => {
+            void handleSaveAndExit();
+          }}
+        >
+          <ListItemIcon>
+            <ContentPasteGoIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Save and Exit'} />
+        </ListItemButton>
+        <ListItemButton
+          onClick={() => {
+            void handleSaveNew();
+          }}
+        >
+          <ListItemIcon>
+            <SaveIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Save'} />
+        </ListItemButton>
+        <ListItemButton onClick={handleClear}>
+          <ListItemIcon>
+            <LayersClearIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Clear'} />
+        </ListItemButton>
+        <ListItemButton
+          onClick={() => {
+            void handleDelete();
+          }}
+        >
+          <ListItemIcon>
+            <DeleteForeverIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Delete'} />
+        </ListItemButton>
+      </>
+    );
 
     const drawingToolList = (
       <ToggleButtonGroup
@@ -398,11 +363,19 @@ const ImageAnnotator = ({
           sx={{ textTransform: 'none' }}
         >
           <ListItemIcon>
-            {' '}
             <GpsFixedIcon />
-            {/* <AddIcon /> */}
           </ListItemIcon>
-          <ListItemText primary={'Point'} />
+          <ListItemText primary={'Point Circle'} />
+        </ListItemButton>
+        <ListItemButton
+          component={ToggleButton}
+          value={'pointcross'}
+          sx={{ textTransform: 'none' }}
+        >
+          <ListItemIcon>
+            <AddIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Point Cross'} />
         </ListItemButton>
         <ListItemButton
           component={ToggleButton}
@@ -410,7 +383,6 @@ const ImageAnnotator = ({
           sx={{ textTransform: 'none' }}
         >
           <ListItemIcon>
-            {' '}
             <LinearScaleIcon />
           </ListItemIcon>
           <ListItemText primary={'Line'} />
@@ -421,7 +393,6 @@ const ImageAnnotator = ({
           sx={{ textTransform: 'none' }}
         >
           <ListItemIcon>
-            {' '}
             <GestureIcon />
           </ListItemIcon>
           <ListItemText primary={'Freehand'} />
@@ -432,7 +403,6 @@ const ImageAnnotator = ({
           sx={{ textTransform: 'none' }}
         >
           <ListItemIcon>
-            {' '}
             <PolylineIcon />
           </ListItemIcon>
           <ListItemText primary={'Polygon'} />
@@ -443,7 +413,6 @@ const ImageAnnotator = ({
           sx={{ textTransform: 'none' }}
         >
           <ListItemIcon>
-            {' '}
             <Crop32Icon />
           </ListItemIcon>
           <ListItemText primary={'Rectangle'} />
@@ -454,18 +423,16 @@ const ImageAnnotator = ({
           sx={{ textTransform: 'none' }}
         >
           <ListItemIcon>
-            {' '}
             <RadioButtonUncheckedIcon />
           </ListItemIcon>
           <ListItemText primary={'Circle'} />
-        </ListItemButton>{' '}
+        </ListItemButton>
         <ListItemButton
           component={ToggleButton}
           value={'ellipse'}
           sx={{ textTransform: 'none' }}
         >
           <ListItemIcon>
-            {' '}
             <BlurCircularIcon />
           </ListItemIcon>
           <ListItemText primary={'Ellipse'} />
@@ -473,7 +440,7 @@ const ImageAnnotator = ({
       </ToggleButtonGroup>
     );
 
-    setMenuButtons({ buttons, drawingTools, drawingToolList });
+    setMenuButtons({ drawingToolList, optionList });
     return () => {
       setMenuButtons(null);
     };
@@ -509,115 +476,6 @@ const ImageAnnotator = ({
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-
-      {/* <List component="nav">
-        <ToggleButtonGroup
-          orientation="vertical"
-          value={drawingTool}
-          exclusive
-          onChange={handleSetDrawingTool}
-        >
-          <ListItemButton
-            component={ToggleButton}
-            value={'point'}
-            sx={{ textTransform: 'none' }}
-          >
-            <ListItemIcon>
-              {' '}
-              <GpsFixedIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Point'} />
-          </ListItemButton>
-          <ListItemButton
-            component={ToggleButton}
-            value={'line'}
-            sx={{ textTransform: 'none' }}
-          >
-            <ListItemIcon>
-              {' '}
-              <LinearScaleIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Line'} />
-          </ListItemButton>
-          <ListItemButton
-            component={ToggleButton}
-            value={'freehand'}
-            sx={{ textTransform: 'none' }}
-          >
-            <ListItemIcon>
-              {' '}
-              <GestureIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Freehand'} />
-          </ListItemButton>
-          <ListItemButton
-            component={ToggleButton}
-            value={'polygon'}
-            sx={{ textTransform: 'none' }}
-          >
-            <ListItemIcon>
-              {' '}
-              <PolylineIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Polygon'} />
-          </ListItemButton>
-          <ListItemButton
-            component={ToggleButton}
-            value={'rect'}
-            sx={{ textTransform: 'none' }}
-          >
-            <ListItemIcon>
-              {' '}
-              <Crop32Icon />
-            </ListItemIcon>
-            <ListItemText primary={'Rect'} />
-          </ListItemButton>
-          <ListItemButton
-            component={ToggleButton}
-            value={'circle'}
-            sx={{ textTransform: 'none' }}
-          >
-            <ListItemIcon>
-              {' '}
-              <RadioButtonUncheckedIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Circle'} />
-          </ListItemButton>{' '}
-          <ListItemButton
-            component={ToggleButton}
-            value={'ellipse'}
-            sx={{ textTransform: 'none' }}
-          >
-            <ListItemIcon>
-              {' '}
-              <BlurCircularIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Ellipse'} />
-          </ListItemButton> */}
-      {/* <ToggleButton value="point">
-            <GpsFixedIcon />
-          </ToggleButton>
-          <ToggleButton value="line">
-            <LinearScaleIcon />
-          </ToggleButton>
-          <ToggleButton value="freehand">
-            <GestureIcon />
-          </ToggleButton>
-          <ToggleButton value="polygon">
-            <PolylineIcon />
-          </ToggleButton>
-          <ToggleButton value="rect">
-            <Crop32Icon />
-          </ToggleButton>
-          <ToggleButton value="circle">
-            <RadioButtonUncheckedIcon />
-          </ToggleButton>
-          <ToggleButton value="ellipse">
-            <BlurCircularIcon />
-          </ToggleButton> */}
-      {/* </ToggleButtonGroup> */}
-      {/* </List> */}
-      {/* <div id="image-annotator-toolbar-container"></div> */}
       <div
         id="image-annotator"
         style={{ width: '100%', height: '100vh' }}

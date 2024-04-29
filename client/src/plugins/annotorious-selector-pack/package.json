@@ -1,0 +1,36 @@
+{
+  "name": "@recogito/annotorious-selector-pack",
+  "version": "0.6.0",
+  "description": "Additional selection tools for Annotorious and the Annotorious OpenSeadragon plugin",
+  "main": "dist/annotorious-selector-pack.js",
+  "scripts": {
+    "start": "webpack serve --open --mode=development",
+    "build": "webpack --mode=production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/recogito/annotorious-selector-pack.git"
+  },
+  "author": "",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/recogito/annotorious-selector-pack/issues"
+  },
+  "homepage": "https://github.com/recogito/annotorious-selector-pack#readme",
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
+    "@babel/preset-env": "^7.14.7",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.2.6",
+    "html-webpack-plugin": "^5.4.0",
+    "sass": "^1.35.2",
+    "sass-loader": "^10.2.0",
+    "style-loader": "^2.0.0",
+    "webpack": "^5.59.1",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.3.1"
+  },
+  "dependencies": {
+    "@recogito/annotorious": "^2.7.13"
+  }
+}
