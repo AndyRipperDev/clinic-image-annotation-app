@@ -2,9 +2,10 @@ import express from "express";
 import fs from "node:fs/promises";
 import path from "path";
 import {
-  uploadStorage,
-  preuploadMiddleware,
-} from "../middleware/storage.middleware.js";
+  folderDicomUploadStorage,
+  folderDicomPreuploadMiddleware,
+} from "../middleware/folderDicomUpload.middleware.js";
+import { folderConfigUploadStorage } from "../middleware/folderConfigUpload.middleware.js";
 import {
   createFolder,
   folderExists,
@@ -197,6 +198,140 @@ router.delete("/:folderName", async (req, res) => {
   }
 });
 
+router.get("/:folderName/config", async (req, res) => {
+  const directoryPath = "./data/folders/";
+
+  try {
+    const { folderName } = req.params;
+    const folderPath = path.join(directoryPath, folderName);
+
+    const folderFound = await folderExists(folderPath);
+    if (!folderFound) {
+      return res.status(404).json({ error: "Folder not found" });
+    }
+
+    const configPath = path.join(folderPath, "config.json");
+    const configFound = await fs
+      .access(configPath)
+      .then(() => true)
+      .catch(() => false);
+    if (!configFound) {
+      return res.status(404).json({ error: "Config file not found" });
+    }
+
+    const data = await fs.readFile(configPath, "utf8");
+    const config = JSON.parse(data);
+
+    res.status(200).json(config);
+  } catch (err) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/:folderName/config/download", async (req, res) => {
+  const directoryPath = "./data/folders/";
+
+  try {
+    const { folderName } = req.params;
+    const folderPath = path.join(directoryPath, folderName);
+
+    const folderFound = await folderExists(folderPath);
+    if (!folderFound) {
+      return res.status(404).json({ error: "Folder not found" });
+    }
+
+    const configPath = path.join(folderPath, "config.json");
+    const configFound = await fs
+      .access(configPath)
+      .then(() => true)
+      .catch(() => false);
+    if (!configFound) {
+      return res.status(404).json({ error: "Config file not found" });
+    }
+
+    res.download(configPath);
+  } catch (err) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/:folderName/config", async (req, res) => {
+  const directoryPath = "./data/folders/";
+
+  try {
+    const { folderName } = req.params;
+    const folderPath = path.join(directoryPath, folderName);
+
+    const folderFound = await folderExists(folderPath);
+    if (!folderFound) {
+      return res.status(404).json({ error: "Folder not found" });
+    }
+
+    const { config } = req.body;
+
+    if (!config) {
+      return res.status(400).json({ error: "Config is required" });
+    }
+
+    const { drawingTools, configAnnotations } = JSON.parse(config);
+
+    if (!drawingTools) {
+      return res.status(400).json({ error: "Drawing Tools are required" });
+    }
+
+    if (!configAnnotations) {
+      return res.status(400).json({ error: "Config Annotations are required" });
+    }
+
+    const configData = {
+      drawingTools,
+      configAnnotations,
+    };
+
+    const data = JSON.stringify(configData, null, 2);
+    const configPath = path.join(folderPath, "config.json");
+    await fs.writeFile(configPath, data);
+
+    res.status(201).json(configData);
+  } catch (err) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post(
+  "/:folderName/config/upload",
+  folderConfigUploadStorage.single("config"),
+  async (req, res) => {
+    const directoryPath = "./data/folders/";
+
+    try {
+      const { folderName } = req.params;
+      const folderPath = path.join(directoryPath, folderName);
+
+      const folderFound = await folderExists(folderPath);
+      if (!folderFound) {
+        return res.status(404).json({ error: "Folder not found" });
+      }
+
+      const configPath = path.join(folderPath, "config.json");
+      const configFound = await fs
+        .access(configPath)
+        .then(() => true)
+        .catch(() => false);
+      if (!configFound) {
+        return res.status(404).json({ error: "Config file not found" });
+      }
+
+      const data = await fs.readFile(configPath, "utf8");
+      const config = JSON.parse(data);
+
+      res.status(201).json(config);
+    } catch (err) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
+
 router.get("/:folderName/dicom", async (req, res) => {
   const directoryPath = "./data/folders/";
 
@@ -221,8 +356,8 @@ router.get("/:folderName/dicom", async (req, res) => {
 
 router.post(
   "/:folderName/dicom",
-  preuploadMiddleware,
-  uploadStorage.single("dicomFilesZip"),
+  folderDicomPreuploadMiddleware,
+  folderDicomUploadStorage.single("dicomFilesZip"),
   async (req, res) => {
     const directoryPath = "./data/folders/";
 

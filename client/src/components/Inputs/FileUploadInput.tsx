@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
-import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -25,6 +24,7 @@ const FileUploadInput = ({
   variant,
   onChange,
   loading,
+  multiple = true,
 }): JSX.Element => {
   return (
     <LoadingButton
@@ -41,7 +41,7 @@ const FileUploadInput = ({
         name={name}
         accept={accept}
         type="file"
-        multiple
+        multiple={multiple}
         onChange={onChange}
       />
     </LoadingButton>
@@ -56,6 +56,7 @@ FileUploadInput.propTypes = {
   variant: PropTypes.string,
   onChange: PropTypes.func,
   loading: PropTypes.bool,
+  multiple: PropTypes.bool,
 };
 
 export default FileUploadInput;

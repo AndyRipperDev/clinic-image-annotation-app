@@ -9,7 +9,7 @@ import './index.css';
 import App from './App';
 import HomePage from './pages/Home/HomePage';
 import FoldersPage from './pages/Folders/FoldersPage';
-import FolderNewPage from './pages/Folders/FolderNewPage';
+import FolderConfigPage from './pages/Folders/FolderConfigPage';
 import FoldersDetailPage from './pages/Folders/FoldersDetailPage';
 import {
   createBrowserRouter,
@@ -27,25 +27,21 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-      // {
-      //   path: 'annotations',
-      //   element: <HomePage />,
-      // },
-      {
-        path: 'annotations/:folderName/:dicomUuid',
-        element: <AnnotationPage />,
-      },
       {
         path: 'folders/',
         element: <FoldersPage />,
       },
       {
-        path: 'folders/new',
-        element: <FolderNewPage />,
-      },
-      {
         path: 'folders/:folderName',
         element: <FoldersDetailPage />,
+      },
+      {
+        path: 'folders/:folderName/config',
+        element: <FolderConfigPage />,
+      },
+      {
+        path: 'folders/:folderName/annotations/:dicomUuid',
+        element: <AnnotationPage />,
       },
     ],
   },

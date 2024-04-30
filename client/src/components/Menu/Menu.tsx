@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
@@ -44,9 +44,10 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function Menu(): JSX.Element {
-  const [open, setOpen] = React.useState(true);
-  const [menuButtons, setMenuButtons] =
-    React.useState<IContextMenuButtons | null>(null);
+  const [open, setOpen] = useState(true);
+  const [menuButtons, setMenuButtons] = useState<IContextMenuButtons | null>(
+    null,
+  );
   const value = { menuButtons, setMenuButtons };
 
   console.log(menuButtons);

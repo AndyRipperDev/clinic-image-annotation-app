@@ -1,22 +1,49 @@
-import React, { useState } from 'react';
-import { Alert, Box, Button, ButtonGroup, Stack } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Button, ButtonGroup, Stack } from '@mui/material';
 import Title from '../../components/Base/Title';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import DicomFileInfoDataTable from '../../components/DataTable/DicomFileInfoDataTable';
 import DicomUploader from '../../components/Uploader/DicomUploader';
 import FolderEditModal from '../../components/Modals/FolderEditModal';
 import type IFolder from '../../interfaces/folder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FolderDownloader from '../../components/Downloader/FolderDownloader';
+import InfoAlert from '../../components/Feedback/InfoAlert';
+import ErrorAlert from '../../components/Feedback/ErrorAlert';
+import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
+import CircularLoading from '../../components/Loadings/CircularLoading';
+import FolderConfigDownloader from '../../components/Downloader/FolderConfigDownloader';
 
 const FoldersDetailPage = (): JSX.Element => {
   const params = useParams();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasConfig, setHasConfig] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  if (params.folderName === null) {
-    navigate('/');
-  }
+  useEffect(() => {
+    let ignore = false;
+
+    if (!ignore) {
+      setIsLoading(true);
+
+      void fetch(
+        `${process.env.BACKEND_API_URL}/folders/${params.folderName}/config`,
+      )
+        .then(async (response) => {
+          if (response.status === 200) {
+            setHasConfig(true);
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const handleFolderRename = (
     oldName: string,
@@ -45,50 +72,80 @@ const FoldersDetailPage = (): JSX.Element => {
     }
   };
 
+  if (params.folderName === null) {
+    navigate('/');
+  }
+
   return (
     <div>
-      <Title text={params.folderName} textAlign={'left'} />
-      {errorMessage !== null && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <Alert sx={{ width: '50%' }} variant="outlined" severity="error">
-            {errorMessage}
-          </Alert>
-        </Box>
-      )}
-      <Stack
-        component="section"
-        direction="row"
-        justifyContent="left"
-        alignItems="center"
-        sx={{
-          pt: 6,
-          pb: 2,
-        }}
-      >
-        <ButtonGroup variant="outlined">
-          <DicomUploader
-            folderName={params.folderName}
-            onError={handleUploadError}
-          />
-          <FolderEditModal
-            folderNameOriginal={params.folderName}
-            onRename={handleFolderRename}
-            labeledButton={true}
-          />
-          <Button
-            variant="outlined"
-            startIcon={<DeleteIcon />}
-            onClick={() => {
-              void deleteAction();
+      {isLoading ? (
+        <CircularLoading />
+      ) : (
+        <>
+          <Title text={params.folderName} textAlign={'left'} />
+          {errorMessage !== null && (
+            <ErrorAlert text={errorMessage} marginTop={4} />
+          )}
+          <Stack
+            component="section"
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{
+              pt: 6,
+              pb: 2,
             }}
           >
-            Delete
-          </Button>
-          <FolderDownloader folderName={params.folderName} />
-        </ButtonGroup>
-      </Stack>
+            <ButtonGroup variant="outlined">
+              {hasConfig ? (
+                <DicomUploader
+                  folderName={params.folderName}
+                  onError={handleUploadError}
+                />
+              ) : (
+                <Button
+                  variant="outlined"
+                  component={Link}
+                  to={`/folders/${params.folderName}/config`}
+                  startIcon={<PostAddOutlinedIcon />}
+                >
+                  Add Configuration
+                </Button>
+              )}
+              <FolderEditModal
+                folderNameOriginal={params.folderName}
+                onRename={handleFolderRename}
+                labeledButton={true}
+              />
+              <Button
+                variant="outlined"
+                startIcon={<DeleteIcon />}
+                onClick={() => {
+                  void deleteAction();
+                }}
+              >
+                Delete
+              </Button>
+            </ButtonGroup>
+            {hasConfig && (
+              <ButtonGroup variant="outlined">
+                <FolderDownloader folderName={params.folderName} />
+                <FolderConfigDownloader folderName={params.folderName} />
+              </ButtonGroup>
+            )}
+          </Stack>
 
-      <DicomFileInfoDataTable folderName={params.folderName} />
+          {hasConfig ? (
+            <DicomFileInfoDataTable folderName={params.folderName} />
+          ) : (
+            <InfoAlert
+              text={
+                "There's no folder configuration yet. Please configure this folder via Add configuration button."
+              }
+            />
+          )}
+        </>
+      )}
     </div>
   );
 };

@@ -4,9 +4,7 @@ import {
   type GridRowParams,
   type GridColDef,
 } from '@mui/x-data-grid';
-import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
 import CircularLoading from '../Loadings/CircularLoading';
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
@@ -16,6 +14,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DrawOutlinedIcon from '@mui/icons-material/DrawOutlined';
 import { type IDicomFileInfo } from '../../interfaces/dicomFileInfo';
 import DicomFileDownloader from '../Downloader/DicomFileDownloader';
+import ErrorAlert from '../Feedback/ErrorAlert';
+import InfoAlert from '../Feedback/InfoAlert';
 
 const fetchDicomFilesInfo = async (
   folderName: string,
@@ -40,7 +40,8 @@ const DicomFileInfoDataTable = ({ folderName }): JSX.Element => {
   const navigate = useNavigate();
 
   const redirectAction = (row): void => {
-    navigate(`/annotations/${folderName}/${row.uuid}`);
+    // navigate(`/annotations/${folderName}/${row.uuid}`);
+    navigate(`/folders/${folderName}/annotations/${row.uuid}`);
   };
 
   const deleteAction = async (row): Promise<void> => {
@@ -135,13 +136,7 @@ const DicomFileInfoDataTable = ({ folderName }): JSX.Element => {
   console.log(errorMessage);
 
   if (errorMessage !== null) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-        <Alert sx={{ width: '50%' }} variant="outlined" severity="error">
-          {errorMessage}
-        </Alert>
-      </Box>
-    );
+    return <ErrorAlert text={errorMessage} />;
   }
   console.log(dicomFilesInfo);
 
@@ -152,12 +147,11 @@ const DicomFileInfoDataTable = ({ folderName }): JSX.Element => {
       ) : (
         <>
           {dicomFilesInfo.length === 0 ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-              <Alert sx={{ width: '50%' }} variant="outlined" severity="info">
-                There&apos;s no DICOM files yet. Please upload DICOM files via
-                upload button.
-              </Alert>
-            </Box>
+            <InfoAlert
+              text={
+                'There are no DICOM files yet. Please upload DICOM files via Add DICOM Files button.'
+              }
+            />
           ) : (
             <DataGrid
               columnVisibilityModel={{ uuid: false }}
@@ -170,6 +164,7 @@ const DicomFileInfoDataTable = ({ folderName }): JSX.Element => {
                 },
               }}
               pageSizeOptions={[10, 20, 50, 100]}
+              disableRowSelectionOnClick
             />
           )}
         </>

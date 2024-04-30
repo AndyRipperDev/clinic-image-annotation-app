@@ -4,9 +4,7 @@ import {
   type GridRowParams,
   type GridColDef,
 } from '@mui/x-data-grid';
-import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
 import CircularLoading from '../Loadings/CircularLoading';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
@@ -16,6 +14,8 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import FolderEditModal from '../Modals/FolderEditModal';
 import type IFolder from '../../interfaces/folder';
 import FolderDownloader from '../Downloader/FolderDownloader';
+import ErrorAlert from '../Feedback/ErrorAlert';
+import InfoAlert from '../Feedback/InfoAlert';
 
 const fetchFolders = async (): Promise<IFolder[]> => {
   const response = await fetch(`${process.env.BACKEND_API_URL}/folders/`);
@@ -146,13 +146,7 @@ const FoldersDataTable = (): JSX.Element => {
   }, []);
 
   if (errorMessage !== null) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-        <Alert sx={{ width: '50%' }} variant="outlined" severity="error">
-          {errorMessage}
-        </Alert>
-      </Box>
-    );
+    return <ErrorAlert text={errorMessage} />;
   }
 
   return (
@@ -162,12 +156,11 @@ const FoldersDataTable = (): JSX.Element => {
       ) : (
         <>
           {folders.length === 0 ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-              <Alert sx={{ width: '50%' }} variant="outlined" severity="info">
-                There&apos;s no folders yet. Create new folder via Create Folder
-                button.
-              </Alert>
-            </Box>
+            <InfoAlert
+              text={
+                'There are no folders yet. Create new folder via Create Folder button.'
+              }
+            />
           ) : (
             <DataGrid
               getRowId={(row) => row.name}
@@ -179,6 +172,7 @@ const FoldersDataTable = (): JSX.Element => {
                 },
               }}
               pageSizeOptions={[10, 20, 50, 100]}
+              disableRowSelectionOnClick
             />
           )}
         </>

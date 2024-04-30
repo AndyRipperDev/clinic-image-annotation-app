@@ -21,11 +21,11 @@ const storage = multer.diskStorage({
   },
 });
 
-const uploadStorage = multer({ storage: storage });
+const folderDicomUploadStorage = multer({ storage: storage });
 
-const preuploadMiddleware = (req, res, next) => {
+const folderDicomPreuploadMiddleware = (req, res, next) => {
   req.dicomZipUniqueName = uuidv4();
   next();
 };
 
-export { uploadStorage, preuploadMiddleware };
+export { folderDicomUploadStorage, folderDicomPreuploadMiddleware };
