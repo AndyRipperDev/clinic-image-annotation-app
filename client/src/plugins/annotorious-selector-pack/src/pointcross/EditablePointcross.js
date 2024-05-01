@@ -2,8 +2,15 @@ import EditableShape from '@recogito/annotorious/src/tools/EditableShape';
 import { parseRectFragment } from '@recogito/annotorious/src/selectors/RectFragment';
 import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 import { toFragment } from './Pointcross';
-import { drawEmbeddedSVG, svgFragmentToShape, toSVGTarget } from '@recogito/annotorious/src/selectors/EmbeddedSVG';
-import { format, setFormatterElSize } from '@recogito/annotorious/src/util/Formatting';
+import {
+  drawEmbeddedSVG,
+  svgFragmentToShape,
+  toSVGTarget,
+} from '@recogito/annotorious/src/selectors/EmbeddedSVG';
+import {
+  format,
+  setFormatterElSize,
+} from '@recogito/annotorious/src/util/Formatting';
 
 // export default class EditablePointcross extends EditableShape {
 
@@ -16,7 +23,7 @@ import { format, setFormatterElSize } from '@recogito/annotorious/src/util/Forma
 //     const drawLineHorizontal = size => {
 //       const xStart = x - size;
 //       const xEnd = x + size;
-      
+
 //       const line = document.createElementNS(SVG_NAMESPACE, 'line');
 //       line.setAttribute('x1', xStart);
 //       line.setAttribute('y1', y);
@@ -30,7 +37,7 @@ import { format, setFormatterElSize } from '@recogito/annotorious/src/util/Forma
 //     const drawLineVertical = size => {
 //       const yStart = y - size;
 //       const yEnd = y + size;
-      
+
 //       const line = document.createElementNS(SVG_NAMESPACE, 'line');
 //       line.setAttribute('x1', x);
 //       line.setAttribute('y1', yStart);
@@ -82,7 +89,7 @@ import { format, setFormatterElSize } from '@recogito/annotorious/src/util/Forma
 
 //   setPointcrossXY = (pointcross, x, y) => {
 //     const inner = pointcross.querySelector('.a9s-inner');
-    
+
 //     const lineHorizontal = inner.querySelector('.a9s-pointcross-h');
 //     lineHorizontal.setAttribute('x1', x - 25);
 //     lineHorizontal.setAttribute('y1', y);
@@ -143,7 +150,7 @@ import { format, setFormatterElSize } from '@recogito/annotorious/src/util/Forma
 //     // console.log('hey4')
 //     // this.pointcross = this.drawPointcross(x, y);
 //     // this.pointcross.addEventListener('mousedown', this.onGrab);
-    
+
 //     // console.log('hey5')
 //     // this.elementGroup.appendChild(this.pointcross);
 
@@ -154,12 +161,6 @@ import { format, setFormatterElSize } from '@recogito/annotorious/src/util/Forma
 //     // console.log('hey7')
 //     // // true if te mouse has grabbed the point
 //     // this.isGrabbed = false;
-
-
-
-
-
-
 
 //     super(annotation, g, config, env);
 
@@ -175,7 +176,6 @@ import { format, setFormatterElSize } from '@recogito/annotorious/src/util/Forma
 //     this.shape.querySelector('.a9s-inner')
 //       .addEventListener('mousedown', this.onGrab(this.shape));
 
-      
 //     // this.innerShapes = this.shape.querySelectorAll('.a9s-inner');
 //     //   for (let i = 0; i < this.innerShapes.length; i++) {
 //     //     this.innerShapes[i].addEventListener('mousedown', this.onGrab(this.shape));
@@ -185,16 +185,16 @@ import { format, setFormatterElSize } from '@recogito/annotorious/src/util/Forma
 //       this.elementGroup.setAttribute('class', 'a9s-annotation editable selected');
 //       this.elementGroup.setAttribute('data-id', annotation.id);
 //       this.elementGroup.appendChild(this.shape);
-  
+
 //       // this.container.appendChild(this.elementGroup);
 //       g.appendChild(this.elementGroup);
-  
+
 //       format(this.shape, annotation, config.formatters);
-  
+
 //       this.isGrabbed = false;
 //   }
 
-//   // onScaleChanged = () => 
+//   // onScaleChanged = () =>
 //   //   this.scaleHandle(this.pointcross);
 
 //   get element() {
@@ -215,7 +215,7 @@ import { format, setFormatterElSize } from '@recogito/annotorious/src/util/Forma
 //       this.setPointcrossXY(this.shape, x, y);
 
 //       // const target = toFragment(x, y, this.env.image, this.config.fragmentUnit);
-      
+
 //       this.emit('update', toSVGTarget(this.shape, this.env.image));
 //       // this.emit('update', target);
 //     }
@@ -240,64 +240,44 @@ import { format, setFormatterElSize } from '@recogito/annotorious/src/util/Forma
 
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const getPoint = shape => {
-  console.log('8');
+const getPoint = (shape) => {
+  // console.log('8');
   const svgPath = shape.getAttribute('d');
 
   const regex = /M(\S+),(\S+)/;
   const match = svgPath.match(regex);
-  
+
   if (match) {
     const x = parseFloat(match[1]);
     const y = parseFloat(match[2]);
 
-    console.log(`x: ${x}, y: ${y}`)
-    
-    return [x, y + 25]
-  } 
+    // console.log(`x: ${x}, y: ${y}`)
 
-  console.log('rip')
-  return [0, 0]
-}
+    return [x, y + 25];
+  }
 
-const getBBox = shape => {
-  console.log('7');
+  // console.log('rip')
+  return [0, 0];
+};
+
+const getBBox = (shape) => {
+  // console.log('7');
   return shape.querySelector('.a9s-inner').getBBox();
-}
+};
 
 /**
  * An editable freehand drawing.
  */
 export default class EditablePointcross extends EditableShape {
-
   constructor(annotation, g, config, env) {
-    
-    console.log('6');
+    // console.log('6');
     super(annotation, g, config, env);
 
     this.svg.addEventListener('mousemove', this.onMouseMove);
     this.svg.addEventListener('mouseup', this.onMouseUp);
 
     // SVG markup for this class looks like this:
-    // 
+    //
     // <g>
     //   <path class="a9s-selection mask"... />
     //   <g> <-- return this node as .element
@@ -307,7 +287,7 @@ export default class EditablePointcross extends EditableShape {
     //     <g class="a9s-handle" ...> ... </g>
     //     <g class="a9s-handle" ...> ... </g>
     //     ...
-    //   </g> 
+    //   </g>
     // </g>
 
     // 'g' for the editable free drawing compound shape
@@ -315,10 +295,10 @@ export default class EditablePointcross extends EditableShape {
 
     this.shape = drawEmbeddedSVG(annotation);
 
-   // TODO optional: mask to dim the outside area
-   // this.mask = new Mask(env.image, this.shape.querySelector('.a9s-inner'));
-    
-   // this.containerGroup.appendChild(this.mask.element);
+    // TODO optional: mask to dim the outside area
+    // this.mask = new Mask(env.image, this.shape.querySelector('.a9s-inner'));
+
+    // this.containerGroup.appendChild(this.mask.element);
 
     this.elementGroup = document.createElementNS(SVG_NAMESPACE, 'g');
     this.elementGroup.setAttribute('class', 'a9s-annotation editable selected');
@@ -329,13 +309,14 @@ export default class EditablePointcross extends EditableShape {
 
     format(this.shape, annotation, config.formatter);
 
-    this.shape.querySelector('.a9s-inner')
+    this.shape
+      .querySelector('.a9s-inner')
       .addEventListener('mousedown', this.onGrab(this.shape));
 
     const { x, y, width, height } = getBBox(this.shape);
 
     // TODO optional: handles to stretch the shape
-/*    this.handles = [
+    /*    this.handles = [
       [ x, y ], 
       [ x + width, y ], 
       [ x + width, y + height ], 
@@ -358,7 +339,7 @@ export default class EditablePointcross extends EditableShape {
   }
 
   setPoint = (point) => {
-    console.log('5');
+    // console.log('5');
     const pointX = parseFloat(point[0]);
     const pointY = parseFloat(point[1]);
     const startX = pointX - 25;
@@ -366,8 +347,22 @@ export default class EditablePointcross extends EditableShape {
     const startY = pointY - 25;
     const endY = pointY + 25;
 
-    const str = 'M' + pointX + ',' + startY + ' ' + 'V' + endY + ' ' + 'M' + startX + ',' + pointY + ' ' + 'H' + endX;
-
+    const str =
+      'M' +
+      pointX +
+      ',' +
+      startY +
+      ' ' +
+      'V' +
+      endY +
+      ' ' +
+      'M' +
+      startX +
+      ',' +
+      pointY +
+      ' ' +
+      'H' +
+      endX;
 
     // // Not using .toFixed(1) because that will ALWAYS
     // // return one decimal, e.g. "15.0" (when we want "15")
@@ -388,7 +383,7 @@ export default class EditablePointcross extends EditableShape {
     // this.mask.redraw();
 
     // TODO optional: handles to stretch the shape
-/*    const [ topleft, topright, bottomright, bottomleft] = this.handles;
+    /*    const [ topleft, topright, bottomright, bottomleft] = this.handles;
 
     this.setHandleXY(topleft, x, y);
     this.setHandleXY(topright, x + width, y);
@@ -396,51 +391,51 @@ export default class EditablePointcross extends EditableShape {
     this.setHandleXY(bottomleft, x, y + height);*/
 
     setFormatterElSize(this.elementGroup, x, y, width, height);
-  }
+  };
 
-    // TODO optional: handles to stretch the shape
-/*  stretchCorners = (draggedHandleIdx, anchorHandle, mousePos) => {
+  // TODO optional: handles to stretch the shape
+  /*  stretchCorners = (draggedHandleIdx, anchorHandle, mousePos) => {
     const anchor = this.getHandleXY(anchorHandle);
   }*/
 
-  onGrab = grabbedElem => evt => {
-    console.log('grabbed1');
+  onGrab = (grabbedElem) => (evt) => {
+    // console.log('grabbed1');
     this.grabbedElem = grabbedElem;
     const pos = this.getSVGPoint(evt);
     this.grabbedAt = { x: pos.x, y: pos.y };
-  }
+  };
 
-
-
-  onMouseMove = evt => {
-    console.log('4');
+  onMouseMove = (evt) => {
+    // console.log('4');
     const constrain = (coord, delta, max) =>
-      coord + delta < 0 ? -coord : (coord + delta > max ? max - coord : delta);
+      coord + delta < 0 ? -coord : coord + delta > max ? max - coord : delta;
 
-      console.log('11');
+    // console.log('11');
     if (this.grabbedElem) {
       const pos = this.getSVGPoint(evt);
 
       const { x, y, width, height } = getBBox(this.shape);
 
       if (this.grabbedElem === this.shape) {
-
-        console.log('grabbed');
+        // console.log('grabbed');
         const { naturalWidth, naturalHeight } = this.env.image;
 
         const dx = constrain(x, pos.x - this.grabbedAt.x, naturalWidth - width);
-        const dy = constrain(y, pos.y - this.grabbedAt.y, naturalHeight - height);
+        const dy = constrain(
+          y,
+          pos.y - this.grabbedAt.y,
+          naturalHeight - height,
+        );
 
         const inner = this.shape.querySelector('.a9s-inner');
         let updatedPoint = getPoint(inner);
-        updatedPoint[0] = updatedPoint[0] + dx
-        updatedPoint[1] = updatedPoint[1] + dy
-
+        updatedPoint[0] = updatedPoint[0] + dx;
+        updatedPoint[1] = updatedPoint[1] + dy;
 
         this.grabbedAt = pos;
 
         this.setPoint(updatedPoint);
-        console.log(updatedPoint)
+        // console.log(updatedPoint)
 
         this.emit('update', toSVGTarget(this.shape, this.env.image));
       }
@@ -455,36 +450,31 @@ export default class EditablePointcross extends EditableShape {
         this.emit('update', toSVGTarget(this.shape, this.env.image));
       }*/
     }
-  }
+  };
 
-  onMouseUp = evt => {
-    console.log('2');
+  onMouseUp = (evt) => {
+    // console.log('2');
     this.grabbedElem = null;
     this.grabbedAt = null;
-  }
+  };
 
   get element() {
-    console.log('1');
+    // console.log('1');
     return this.elementGroup;
   }
 
-  updateState = annotation => {
-    console.log('uuuuupdated1');
+  updateState = (annotation) => {
+    // console.log('uuuuupdated1');
     const point = getPoint(svgFragmentToShape(annotation));
-    
-    console.log('uuuuupdated');
+
+    // console.log('uuuuupdated');
     this.setPoint(point);
-  }
+  };
 
   destroy = () => {
-    console.log('3');
-    
+    // console.log('3');
+
     this.containerGroup.parentNode.removeChild(this.containerGroup);
     super.destroy();
-  }
-
+  };
 }
-
-
-
-

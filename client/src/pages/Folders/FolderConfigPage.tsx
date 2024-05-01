@@ -25,7 +25,7 @@ const FolderConfigPage = (): JSX.Element => {
   const [savedFolderConfig, setSavedFolderConfig] =
     useState<IFolderConfig | null>(null);
 
-  const [drawingTools, setDrawingTools] = useState(() => [
+  const drawingToolsAll = [
     'point',
     'pointcross',
     'line',
@@ -34,7 +34,9 @@ const FolderConfigPage = (): JSX.Element => {
     'rect',
     'circle',
     'ellipse',
-  ]);
+  ];
+
+  const [drawingTools, setDrawingTools] = useState(() => drawingToolsAll);
 
   useEffect(() => {
     let ignore = false;
@@ -66,6 +68,10 @@ const FolderConfigPage = (): JSX.Element => {
     newDrawingTools: string[],
   ): void => {
     if (newDrawingTools.length > 0) {
+      newDrawingTools.sort(function (a, b) {
+        return drawingToolsAll.indexOf(a) - drawingToolsAll.indexOf(b);
+      });
+
       setDrawingTools(newDrawingTools);
     }
   };

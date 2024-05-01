@@ -2,7 +2,6 @@ import { Selection } from '@recogito/annotorious/src/tools/Tool';
 import { toSVGTarget } from '@recogito/annotorious/src/selectors/EmbeddedSVG';
 import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 
-
 // /**
 //  * A 'rubberband' selection tool for creating Line drawing by
 //  * clicking and dragging.
@@ -11,7 +10,7 @@ import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 // //     drawLineHorizontal = (x, y, size, strokeWidth) => {
 // //         const xStart = x - size;
 // //         const xEnd = x + size;
-        
+
 // //         const line = document.createElementNS(SVG_NAMESPACE, 'line');
 // //         line.setAttribute('x1', xStart);
 // //         line.setAttribute('y1', y);
@@ -24,7 +23,7 @@ import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 // //       drawLineVertical = (x, y, size, strokeWidth) => {
 // //         const yStart = y - size;
 // //         const yEnd = y + size;
-        
+
 // //         const line = document.createElementNS(SVG_NAMESPACE, 'line');
 // //         line.setAttribute('x1', x);
 // //         line.setAttribute('y1', yStart);
@@ -38,7 +37,7 @@ import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 // //     this.env = env;
 
 // //     this.group = document.createElementNS(SVG_NAMESPACE, 'g');
-    
+
 // //     this.cross = document.createElementNS(SVG_NAMESPACE, 'g');
 // //     this.cross.setAttribute('class', 'a9s-selection');
 
@@ -56,12 +55,10 @@ import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 // //     g.appendChild(this.group);
 // //   }
 
-
-
 //   drawLineHorizontal = (x, y, size, strokeWidth) => {
 //     const xStart = x - size;
 //     const xEnd = x + size;
-    
+
 //     const line = document.createElementNS(SVG_NAMESPACE, 'line');
 //     line.setAttribute('x1', xStart);
 //     line.setAttribute('y1', y);
@@ -77,7 +74,7 @@ import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 //   drawLineVertical = (x, y, size, strokeWidth) => {
 //     const yStart = y - size;
 //     const yEnd = y + size;
-    
+
 //     const line = document.createElementNS(SVG_NAMESPACE, 'line');
 //     line.setAttribute('x1', x);
 //     line.setAttribute('y1', yStart);
@@ -125,19 +122,15 @@ import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 // g.appendChild(this.group);
 // }
 
-
-
 //   get element() {
 //     return this.group;
 //   }
 
 //   destroy = () => {
-//     this.group.parentNode.removeChild(this.group); 
+//     this.group.parentNode.removeChild(this.group);
 //     // this.cross = null;
 //     this.group = null;
 //   }
-
-
 
 //   toSelection = () =>
 //     new Selection({
@@ -149,20 +142,6 @@ import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
 
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // TODO optional: mask to dim the outside area
 //import Mask from './FreehandMask';
 
@@ -171,7 +150,6 @@ import { SVG_NAMESPACE } from '@recogito/annotorious/src/util/SVG';
  * clicking and dragging.
  */
 export default class PointcrossSelection {
-
   constructor(anchor, g, env) {
     this.point = anchor;
 
@@ -190,26 +168,26 @@ export default class PointcrossSelection {
 
     this.setPoint(this.point);
 
-   // TODO optional: mask to dim the outside area
-   // this.mask = new Mask(env.image, this.inner);
+    // TODO optional: mask to dim the outside area
+    // this.mask = new Mask(env.image, this.inner);
 
     this.pointcross.appendChild(this.outer);
     this.pointcross.appendChild(this.inner);
 
-    // Additionally, selection remains hidden until 
+    // Additionally, selection remains hidden until
     // the user actually moves the mouse
     // this.group.style.display = 'none';
 
-   // TODO optional: mask to dim the outside area
-   // this.group.appendChild(this.mask.element);
+    // TODO optional: mask to dim the outside area
+    // this.group.appendChild(this.mask.element);
     this.group.appendChild(this.pointcross);
 
     g.appendChild(this.group);
 
-    console.log('hey')
+    // console.log('hey')
   }
 
-  setPoint = point => {
+  setPoint = (point) => {
     this.group.style.display = null;
     const x = parseFloat(point[0]);
     const y = parseFloat(point[1]);
@@ -218,64 +196,73 @@ export default class PointcrossSelection {
     const startY = y - 25;
     const endY = y + 25;
 
-    const str = 'M' + x + ',' + startY + ' ' + 'V' + endY + ' ' + 'M' + startX + ',' + y + ' ' + 'H' + endX;
-
+    const str =
+      'M' +
+      x +
+      ',' +
+      startY +
+      ' ' +
+      'V' +
+      endY +
+      ' ' +
+      'M' +
+      startX +
+      ',' +
+      y +
+      ' ' +
+      'H' +
+      endX;
 
     // 'M0,-1 V1 M-1,0 H1'
 
-
     this.outer.setAttribute('d', str);
     this.inner.setAttribute('d', str);
-  }
+  };
 
-  getBoundingClientRect = () =>
-    this.outer.getBoundingClientRect();
+  getBoundingClientRect = () => this.outer.getBoundingClientRect();
 
-  dragTo = xy => {
+  dragTo = (xy) => {
     // Make visible
-    console.log(xy)
+    // console.log(xy)
     // this.group.style.display = null;
 
     //TODO optional: edge smoothing
-    
-    this.setPoint(xy);   
 
-   // TODO optional: mask to dim the outside area
-   // this.mask.redraw();
-  }
+    this.setPoint(xy);
 
+    // TODO optional: mask to dim the outside area
+    // this.mask.redraw();
+  };
 
   get element() {
-    
-    console.log('hey2')
+    // console.log('hey2')
     return this.pointcross;
   }
 
   destroy = () => {
-    console.log('8');
+    // console.log('8');
     this.group.parentNode.removeChild(this.group);
-    this.pointcross = null;    
+    this.pointcross = null;
     this.group = null;
-  }
+  };
 
-//   toSelection = () => {
-//     // new Selection({
-//     //     ...toSVGTarget(this.group, this.env.image),
-//     //     renderedVia: {
-//     //       name: 'pointcross'
-//     //     }
-//     //   });
-    
-//     console.log('hey3')
-//     return new Selection(toSVGTarget(this.group, this.env.image));
-//   }
+  //   toSelection = () => {
+  //     // new Selection({
+  //     //     ...toSVGTarget(this.group, this.env.image),
+  //     //     renderedVia: {
+  //     //       name: 'pointcross'
+  //     //     }
+  //     //   });
 
-    toSelection = () =>
+  //     console.log('hey3')
+  //     return new Selection(toSVGTarget(this.group, this.env.image));
+  //   }
+
+  toSelection = () =>
     new Selection({
       ...toSVGTarget(this.group, this.env.image),
       renderedVia: {
-        name: 'pointcross'
-      }
+        name: 'pointcross',
+      },
     });
-
 }
