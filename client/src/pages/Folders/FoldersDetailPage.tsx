@@ -14,6 +14,7 @@ import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 import CircularLoading from '../../components/Loadings/CircularLoading';
 import FolderConfigDownloader from '../../components/Downloader/FolderConfigDownloader';
 import DocumentScannerOutlinedIcon from '@mui/icons-material/DocumentScannerOutlined';
+import { type IDicomFileInfo } from '../../interfaces/dicomFileInfo';
 
 const FoldersDetailPage = (): JSX.Element => {
   const params = useParams();
@@ -21,6 +22,9 @@ const FoldersDetailPage = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasConfig, setHasConfig] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [newDicomFilesInfo, setnewDicomFilesInfo] = useState<IDicomFileInfo[]>(
+    [],
+  );
 
   useEffect(() => {
     let ignore = false;
@@ -55,6 +59,12 @@ const FoldersDetailPage = (): JSX.Element => {
 
   const handleUploadError = (error: string): void => {
     setErrorMessage(error);
+  };
+
+  const handleNewUploadedDicomFiles = (
+    dicomFilesInfo: IDicomFileInfo[],
+  ): void => {
+    setnewDicomFilesInfo(dicomFilesInfo);
   };
 
   const deleteAction = async (): Promise<void> => {
@@ -102,6 +112,7 @@ const FoldersDetailPage = (): JSX.Element => {
                 <DicomUploader
                   folderName={params.folderName}
                   onError={handleUploadError}
+                  onSuccess={handleNewUploadedDicomFiles}
                 />
               ) : (
                 <Button
@@ -145,7 +156,10 @@ const FoldersDetailPage = (): JSX.Element => {
           </Stack>
 
           {hasConfig ? (
-            <DicomFileInfoDataTable folderName={params.folderName} />
+            <DicomFileInfoDataTable
+              folderName={params.folderName}
+              newData={newDicomFilesInfo}
+            />
           ) : (
             <InfoAlert
               text={

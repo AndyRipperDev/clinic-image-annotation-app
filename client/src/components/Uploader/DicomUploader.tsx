@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
 import JSZip from 'jszip';
 import PropTypes from 'prop-types';
 import FileUploadInput from '../Inputs/FileUploadInput';
 
-const DicomUploader = ({ folderName, onError }): JSX.Element => {
+const DicomUploader = ({ folderName, onError, onSuccess }): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const navigate = useNavigate();
-
   const handleUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ): Promise<void> => {
@@ -52,7 +49,8 @@ const DicomUploader = ({ folderName, onError }): JSX.Element => {
       );
 
       if (response.ok) {
-        navigate(0);
+        const responseData = await response.json();
+        onSuccess(responseData);
       } else {
         const responseData = await response.json();
         onError(responseData?.error as string);
@@ -89,6 +87,7 @@ const DicomUploader = ({ folderName, onError }): JSX.Element => {
 DicomUploader.propTypes = {
   folderName: PropTypes.string,
   onError: PropTypes.func,
+  onSuccess: PropTypes.func,
 };
 
 export default DicomUploader;

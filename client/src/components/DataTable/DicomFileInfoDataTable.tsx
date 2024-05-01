@@ -33,7 +33,7 @@ const fetchDicomFilesInfo = async (
   }
 };
 
-const DicomFileInfoDataTable = ({ folderName }): JSX.Element => {
+const DicomFileInfoDataTable = ({ folderName, newData }): JSX.Element => {
   const [dicomFilesInfo, setDicomFilesInfo] = useState<IDicomFileInfo[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -119,6 +119,7 @@ const DicomFileInfoDataTable = ({ folderName }): JSX.Element => {
   ];
 
   useEffect(() => {
+    console.log('bum');
     async function fetchData(): Promise<void> {
       try {
         setIsLoading(true);
@@ -131,7 +132,7 @@ const DicomFileInfoDataTable = ({ folderName }): JSX.Element => {
       }
     }
     void fetchData();
-  }, []);
+  }, [newData]);
 
   if (errorMessage !== null) {
     return <ErrorAlert text={errorMessage} />;
@@ -172,6 +173,7 @@ const DicomFileInfoDataTable = ({ folderName }): JSX.Element => {
 
 DicomFileInfoDataTable.propTypes = {
   folderName: PropTypes.string,
+  newData: PropTypes.array,
 };
 
 export default DicomFileInfoDataTable;
