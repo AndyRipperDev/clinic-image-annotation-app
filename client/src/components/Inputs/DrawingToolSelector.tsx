@@ -22,52 +22,76 @@ const DrawingToolSelector = ({
       aria-label="drawingTools"
     >
       <Tooltip title="Point Circle">
-        <ToggleButton value="point" aria-label="point" disabled={disabled}>
-          <GpsFixedIcon />
-        </ToggleButton>
+        <span>
+          <ToggleButton value="point" aria-label="point" disabled={disabled}>
+            <GpsFixedIcon />
+          </ToggleButton>
+        </span>
       </Tooltip>
       <Tooltip title="Point Cross">
-        <ToggleButton
-          value="pointcross"
-          aria-label="pointcross"
-          disabled={disabled}
-        >
-          <AddIcon />
-        </ToggleButton>
+        <span>
+          <ToggleButton
+            value="pointcross"
+            aria-label="pointcross"
+            disabled={disabled}
+          >
+            <AddIcon />
+          </ToggleButton>
+        </span>
       </Tooltip>
       <Tooltip title="Line">
-        <ToggleButton value="line" aria-label="line" disabled={disabled}>
-          <LinearScaleIcon />
-        </ToggleButton>
+        <span>
+          <ToggleButton value="line" aria-label="line" disabled={disabled}>
+            <LinearScaleIcon />
+          </ToggleButton>
+        </span>
       </Tooltip>
       <Tooltip title="Freehand">
-        <ToggleButton
-          value="freehand"
-          aria-label="freehand"
-          disabled={disabled}
-        >
-          <GestureIcon />
-        </ToggleButton>
+        <span>
+          <ToggleButton
+            value="freehand"
+            aria-label="freehand"
+            disabled={disabled}
+          >
+            <GestureIcon />
+          </ToggleButton>
+        </span>
       </Tooltip>
       <Tooltip title="Polygon">
-        <ToggleButton value="polygon" aria-label="polygon" disabled={disabled}>
-          <PolylineIcon />
-        </ToggleButton>
+        <span>
+          <ToggleButton
+            value="polygon"
+            aria-label="polygon"
+            disabled={disabled}
+          >
+            <PolylineIcon />
+          </ToggleButton>
+        </span>
       </Tooltip>
       <Tooltip title="Rectangle">
-        <ToggleButton value="rect" aria-label="rect" disabled={disabled}>
-          <Crop32Icon />
-        </ToggleButton>
+        <span>
+          <ToggleButton value="rect" aria-label="rect" disabled={disabled}>
+            <Crop32Icon />
+          </ToggleButton>
+        </span>
       </Tooltip>
       <Tooltip title="Circle">
-        <ToggleButton value="circle" aria-label="circle" disabled={disabled}>
-          <RadioButtonUncheckedIcon />
-        </ToggleButton>
+        <span>
+          <ToggleButton value="circle" aria-label="circle" disabled={disabled}>
+            <RadioButtonUncheckedIcon />
+          </ToggleButton>
+        </span>
       </Tooltip>
       <Tooltip title="Ellipse">
-        <ToggleButton value="ellipse" aria-label="ellipse" disabled={disabled}>
-          <BlurCircularIcon />
-        </ToggleButton>
+        <span>
+          <ToggleButton
+            value="ellipse"
+            aria-label="ellipse"
+            disabled={disabled}
+          >
+            <BlurCircularIcon />
+          </ToggleButton>
+        </span>
       </Tooltip>
     </ToggleButtonGroup>
   );
