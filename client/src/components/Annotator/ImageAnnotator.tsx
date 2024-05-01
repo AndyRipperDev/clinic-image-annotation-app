@@ -118,6 +118,7 @@ const ImageAnnotator = ({
     // });
 
     if (isNewAnnotation === false) {
+      setAnnotationCreated(true);
       anno.loadAnnotations(
         `${process.env.BACKEND_API_URL}/folders/${folderName}/annotations/${dicomUuid}`,
       );
@@ -128,7 +129,7 @@ const ImageAnnotator = ({
     return () => {
       viewer.destroy();
     };
-  }, [imageSrcUrl]);
+  }, [imageSrcUrl, isNewAnnotation]);
 
   useEffect(() => {
     if (folderConfig !== null) {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ImageAnnotator from '../../components/Annotator/ImageAnnotator';
 import { useNavigate, useParams } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
 import type IFolderConfig from '../../interfaces/folderConfig';
 import CircularLoading from '../../components/Loadings/CircularLoading';
 
