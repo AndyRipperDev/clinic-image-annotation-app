@@ -4,7 +4,12 @@ import Box from '@mui/material/Box';
 
 const CircularLoading = (): JSX.Element => {
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
       <CircularProgress />
     </Box>
   );

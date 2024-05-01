@@ -16,12 +16,18 @@ import {
   getDicomFilesInfo,
   getDicomFileInfo,
   extractDicomFiles,
+  createDicomDzi,
 } from "../utils/storageOperations/operations.dicom.js";
 import {
   getAnnotation,
   createAnnotation,
   annotationExists,
 } from "../utils/storageOperations/operations.annotations.js";
+import {
+  deleteDicomFileDzi,
+  deleteFolderDicomFilesDzi,
+  dicomFileDziExists,
+} from "../utils/storageOperations/operations.dzi.js";
 
 import JSZip from "jszip";
 
@@ -174,6 +180,8 @@ router.delete("/:folderName", async (req, res) => {
       return res.status(404).json({ error: "Folder not found" });
     }
 
+    const folderDicomPath = path.join(folderPath, "dicom");
+    await deleteFolderDicomFilesDzi(folderDicomPath);
     await fs.rm(folderPath, { recursive: true });
 
     res.status(200).json({ message: "Folder deleted successfully" });
@@ -400,6 +408,43 @@ router.get("/:folderName/dicom/:dicomUuid/download", async (req, res) => {
   }
 });
 
+router.get("/:folderName/dicom/:dicomUuid/dzi", async (req, res) => {
+  const directoryPath = "./data/folders/";
+
+  try {
+    const { folderName, dicomUuid } = req.params;
+    const folderPath = path.join(directoryPath, folderName);
+
+    const folderFound = await folderExists(folderPath);
+    if (!folderFound) {
+      return res.status(404).json({ error: "Folder not found" });
+    }
+
+    const dicomPath = path.join(folderPath, "dicom", dicomUuid);
+
+    const dicomFound = await folderExists(dicomPath);
+    if (!dicomFound) {
+      return res.status(404).json({ error: "DICOM file not found" });
+    }
+
+    const dziExists = await dicomFileDziExists(dicomUuid);
+
+    if (!dziExists) {
+      const success = await createDicomDzi(dicomPath);
+
+      if (!success) {
+        return res
+          .status(404)
+          .json({ error: "DICOM dzi files cannot be created" });
+      }
+    }
+
+    res.status(200).json({ message: "DICOM dzi files exist" });
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
 router.delete("/:folderName/dicom/:dicomUuid", async (req, res) => {
   const directoryPath = "./data/folders/";
 
@@ -419,6 +464,7 @@ router.delete("/:folderName/dicom/:dicomUuid", async (req, res) => {
       return res.status(404).json({ error: "DICOM file not found" });
     }
 
+    await deleteDicomFileDzi(dicomUuid);
     await fs.rm(dicomPath, { recursive: true });
 
     const annotationFilePath = path.join(

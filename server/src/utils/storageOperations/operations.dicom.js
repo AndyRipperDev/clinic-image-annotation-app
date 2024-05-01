@@ -46,6 +46,16 @@ const getDicomFilesInfo = async (dicomPath) => {
   return dicomFiles.filter((file) => file !== null);
 };
 
+const createDicomDzi = async (dicomPath) => {
+  const dicomFiles = await fs.readdir(dicomPath);
+  if (dicomFiles.length !== 1 || !dicomFiles[0].endsWith(".dcm")) return false;
+  const dicomFileName = dicomFiles[0];
+  const dicomPathFileName = path.join(dicomPath, dicomFileName);
+
+  const dziPath = "./data/dzi_images/" + path.basename(dicomPath) + "/";
+  return await convertDicomToDzi(dicomPathFileName, dziPath);
+};
+
 const extractDicomFiles = async (extractDir, zipFile) => {
   const zipFilePath = zipFile.path;
 
@@ -87,4 +97,9 @@ const extractDicomFiles = async (extractDir, zipFile) => {
   return { extractedFiles: extractedFiles, errors: errorsMess };
 };
 
-export { getDicomFilesInfo, getDicomFileInfo, extractDicomFiles };
+export {
+  getDicomFilesInfo,
+  getDicomFileInfo,
+  extractDicomFiles,
+  createDicomDzi,
+};
