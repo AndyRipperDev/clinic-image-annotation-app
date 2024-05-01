@@ -52,8 +52,6 @@ const DicomUploader = ({ folderName, onError }): JSX.Element => {
       );
 
       if (response.ok) {
-        const responseData = await response.json();
-        console.log(responseData);
         navigate(0);
       } else {
         const responseData = await response.json();

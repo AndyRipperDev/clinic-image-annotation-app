@@ -19,7 +19,7 @@ const HomePage = (): JSX.Element => {
           mx: 6,
         }}
       >
-        <Title text={'Image Annotation'} textAlign={'center'} />
+        <Title text={'Clinic Image Annotation'} textAlign={'center'} />
         {/* <Paragraph
           text={'Choose file and then upload it'}
           maxWidth={'sm'}

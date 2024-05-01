@@ -29,7 +29,7 @@ const App = (): JSX.Element => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
+      <CssBaseline enableColorScheme />
       <Menu />
     </ThemeProvider>
   );

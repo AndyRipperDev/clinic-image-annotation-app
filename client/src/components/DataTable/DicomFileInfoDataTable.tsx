@@ -133,12 +133,9 @@ const DicomFileInfoDataTable = ({ folderName }): JSX.Element => {
     void fetchData();
   }, []);
 
-  console.log(errorMessage);
-
   if (errorMessage !== null) {
     return <ErrorAlert text={errorMessage} />;
   }
-  console.log(dicomFilesInfo);
 
   return (
     <div style={{ width: '100%' }}>

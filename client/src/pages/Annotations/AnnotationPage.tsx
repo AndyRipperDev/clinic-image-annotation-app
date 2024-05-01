@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ImageAnnotator from '../../components/Annotator/ImageAnnotator';
 import { useNavigate, useParams } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
+import type IFolderConfig from '../../interfaces/folderConfig';
 
 const AnnotationPage = (): JSX.Element => {
   const navigate = useNavigate();
@@ -9,17 +10,12 @@ const AnnotationPage = (): JSX.Element => {
   const [isNewAnnotation, setIsNewAnnotation] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  console.log('is new');
-  console.log(isNewAnnotation);
+  const [folderConfig, setFolderConfig] = useState<IFolderConfig | null>(null);
 
   const selectedImage = 'output.dzi';
 
   if (params.folderName === null || params.dicomUuid === null) {
     navigate('/');
-  } else {
-    console.log(params.folderName);
-    console.log(params.dicomUuid);
   }
 
   const buttonUrl = `${process.env.BACKEND_API_URL}/viewer/images/`;
@@ -33,16 +29,25 @@ const AnnotationPage = (): JSX.Element => {
 
       void fetch(
         `${process.env.BACKEND_API_URL}/folders/${params.folderName}/annotations/${params.dicomUuid}`,
+      ).then(async (response) => {
+        if (response.status !== 404) {
+          setIsNewAnnotation(false);
+        }
+        // if (!response.ok) {
+        //   setErrorMessage('Error');
+        // }
+
+        return await response.json();
+      });
+
+      void fetch(
+        `${process.env.BACKEND_API_URL}/folders/${params.folderName}/config`,
       )
         .then(async (response) => {
-          if (response.status !== 404) {
-            setIsNewAnnotation(false);
+          if (response.status === 200) {
+            const config = await response.json();
+            setFolderConfig(config as IFolderConfig);
           }
-          // if (!response.ok) {
-          //   setErrorMessage('Error');
-          // }
-
-          return await response.json();
         })
         .finally(() => {
           setIsLoading(false);
@@ -67,6 +72,7 @@ const AnnotationPage = (): JSX.Element => {
               folderName={params.folderName}
               dicomUuid={params.dicomUuid}
               isNewAnnotation={isNewAnnotation}
+              folderConfig={folderConfig}
             />
           )}
         </>

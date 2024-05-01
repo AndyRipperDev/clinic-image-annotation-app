@@ -15,7 +15,7 @@ import { ListSubheader, Tooltip } from '@mui/material';
 import { type IContextMenuButtons } from '../../interfaces/menuContext';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
-const drawerWidth: number = 240;
+const drawerWidth: number = 300;
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -50,8 +50,6 @@ export default function Menu(): JSX.Element {
   );
   const value = { menuButtons, setMenuButtons };
 
-  console.log(menuButtons);
-
   const toggleDrawer = (): void => {
     setOpen(!open);
   };
@@ -76,6 +74,19 @@ export default function Menu(): JSX.Element {
             {mainMenuItems}
             {menuButtons !== null && (
               <>
+                {menuButtons?.configAnnotationList !== null && (
+                  <>
+                    <Divider sx={{ my: 1 }} />
+
+                    {open && (
+                      <ListSubheader component="div" inset>
+                        Annotations
+                      </ListSubheader>
+                    )}
+
+                    {menuButtons?.configAnnotationList}
+                  </>
+                )}
                 {menuButtons?.drawingToolList !== null && (
                   <>
                     <Divider sx={{ my: 1 }} />

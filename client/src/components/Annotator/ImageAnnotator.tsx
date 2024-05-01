@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import OpenSeadragon, { SUBPIXEL_ROUNDING_OCCURRENCES } from 'openseadragon';
 import PropTypes from 'prop-types';
 import * as Annotorious from '@recogito/annotorious-openseadragon';
@@ -17,9 +17,11 @@ import {
   Backdrop,
   CircularProgress,
   List,
+  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Switch,
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material';
@@ -32,6 +34,9 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import BlurCircularIcon from '@mui/icons-material/BlurCircular';
 import LinearScaleIcon from '@mui/icons-material/LinearScale';
 import AddIcon from '@mui/icons-material/Add';
+import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
+import type IConfigAnnotation from '../../interfaces/configAnnotation';
+import ColorIcon from '../Base/ColorIcon';
 
 const ImageAnnotator = ({
   buttonSrcUrl,
@@ -39,6 +44,7 @@ const ImageAnnotator = ({
   folderName,
   dicomUuid,
   isNewAnnotation,
+  folderConfig,
 }): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [annotationCreated, setAnnotationCreated] = useState<boolean>(
@@ -48,18 +54,33 @@ const ImageAnnotator = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [annotations, setAnnotations] = useState<Annotorious | null>(null);
   const [drawingTool, setDrawingTool] = useState<string | null>('freehand');
+  const [configAnnotation, setConfigAnnotation] =
+    useState<IConfigAnnotation | null>(null);
+  const [showLabels, setShowLabels] = useState<boolean>(false);
+  const [showAnnotations, setShowAnnotations] = useState<boolean>(true);
   const navigate = useNavigate();
 
   const { menuButtons, setMenuButtons } = useContext(MenuContext);
 
-  console.log(isNewAnnotation);
-  console.log(`is new:${isNewAnnotation}`);
-  console.log(`is newsda:${annotationCreated}`);
-
   useEffect(() => {
-    console.log('a');
-    const colorFormatter = (annotation): string => {
-      return 'dicom-annotation';
+    const colorFormatter2 = (annotation): string => {
+      const tagBodies = annotation?.bodies?.filter((body) => {
+        return body?.type === 'TextualBody' && body?.purpose === 'tagging';
+      });
+
+      const color = tagBodies[0]?.color as string;
+      const availableColors = [
+        'red',
+        'green',
+        'blue',
+        'purple',
+        'pink',
+        'turquoise',
+        'orange',
+        'yellow',
+      ];
+
+      return availableColors.includes(color) ? `dicom-${color}` : 'dicom-red';
     };
 
     const viewer = OpenSeadragon({
@@ -76,39 +97,26 @@ const ImageAnnotator = ({
     const config = {
       allowEmpty: true,
       disableEditor: true,
-      // gigapixelMode: true,
-      formatters: [ShapeLabelsFormatter(), colorFormatter],
-    }; // Optional plugin config options
+      formatters: [colorFormatter2],
+    };
 
     const anno = Annotorious(viewer, config);
     SelectorPack(anno);
-    // Toolbar(anno, document.getElementById('image-annotator-toolbar-container'));
 
     // anno.setDrawingEnabled(true);
     anno.setDrawingTool('freehand');
 
-    anno.on('createAnnotation', async (annotation, overrideId) => {
-      console.log('create');
-      console.log(annotation);
-      // POST to the server and receive a new ID
-      // const newId = await server.createAnnotation(annotation);
+    // anno.on('createAnnotation', async (annotation, overrideId) => {
+    //   console.log('create');
+    // });
 
-      // Inject that ID into RecogitoJS
-      // overrideId(newId);
-    });
+    // anno.on('updateAnnotation', function (annotation, previous) {
+    //   console.log('update');
+    // });
 
-    anno.on('updateAnnotation', function (annotation, previous) {
-      console.log('update');
-      console.log(annotation);
-      console.log(anno.getAnnotations());
-    });
-
-    anno.on('deleteAnnotation', function (annotation) {
-      console.log('delete');
-      console.log(annotation);
-    });
-
-    console.log(isNewAnnotation);
+    // anno.on('deleteAnnotation', function (annotation) {
+    //   console.log('delete');
+    // });
 
     if (isNewAnnotation === false) {
       anno.loadAnnotations(
@@ -123,64 +131,18 @@ const ImageAnnotator = ({
     };
   }, [imageSrcUrl]);
 
-  const handleSave = async (): Promise<void> => {
-    setIsLoading(true);
-
-    const annotationData = annotations.getAnnotations();
-    console.log(JSON.stringify(annotationData));
-
-    if (!annotationCreated) {
-      console.log('post');
-
-      // const formData = new FormData();
-      // formData.append('test', 'w');
-      // formData.append(
-      //   'annotations',
-      //   JSON.stringify(annotations.getAnnotations()),
-      // );
-      // console.log(formData);
-      try {
-        const response = await fetch(
-          `${process.env.BACKEND_API_URL}/folders/${folderName}/annotations`,
-          // {
-          //   method: 'POST',
-          //   headers: { 'Content-Type': 'application/json' },
-          //   body: JSON.stringify(annotationData),
-          // },
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-              dicomUuid,
-              annotationData: JSON.stringify(annotationData),
-            }),
-            // body: JSON.stringify(annotationData),
-          },
-        );
-
-        if (response.ok) {
-          // const responseData = await response.json();
-          navigate(`/`);
-          setAnnotationCreated(true);
-        } else {
-          setErrorMessage('File upload failed');
-        }
-      } catch (error) {
-        setErrorMessage(`Error uploading file: ${error.message}`);
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      console.log('put');
-      setIsLoading(false);
+  useEffect(() => {
+    if (folderConfig !== null) {
+      setConfigAnnotation(
+        folderConfig.configAnnotations[0] as IConfigAnnotation,
+      );
     }
-    console.log(annotations.getAnnotations());
-    // setIsLoading(false);
-  };
+    return () => {
+      setConfigAnnotation(null);
+    };
+  }, [folderConfig]);
 
-  const handleSaveNew = async (): Promise<void> => {
+  const handleSave = async (): Promise<void> => {
     setIsLoading(true);
 
     const annotationData = annotations.getAnnotations();
@@ -307,9 +269,113 @@ const ImageAnnotator = ({
     annotations.clearAnnotations();
   };
 
+  const handleShowLabels = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    const checked = event.target.checked;
+
+    if (checked) {
+      annotations.formatters.push(ShapeLabelsFormatter());
+    } else {
+      annotations.formatters.pop();
+    }
+
+    const annots = annotations.getAnnotations();
+    if (annots?.length !== 0) {
+      annots?.forEach(async (annot) => {
+        annotations.selectAnnotation(annot);
+        await annotations.updateSelected(annot);
+      });
+
+      annotations.cancelSelected();
+    }
+
+    setShowLabels(checked);
+  };
+
+  const handleShowAnnotations = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    const checked = event.target.checked;
+    annotations.setVisible(checked);
+    setShowAnnotations(checked);
+  };
+
+  const getDrawingToolIcon = (drawingToolName): ReactNode => {
+    if (drawingToolName === 'point') {
+      return <GpsFixedIcon />;
+    } else if (drawingToolName === 'pointcross') {
+      return <AddIcon />;
+    } else if (drawingToolName === 'line') {
+      return <LinearScaleIcon />;
+    } else if (drawingToolName === 'freehand') {
+      return <GestureIcon />;
+    } else if (drawingToolName === 'polygon') {
+      return <PolylineIcon />;
+    } else if (drawingToolName === 'rect') {
+      return <Crop32Icon />;
+    } else if (drawingToolName === 'circle') {
+      return <RadioButtonUncheckedIcon />;
+    } else if (drawingToolName === 'ellipse') {
+      return <BlurCircularIcon />;
+    } else {
+      return <GpsFixedIcon />;
+    }
+  };
+
+  const getDrawingToolText = (drawingToolName): string => {
+    if (drawingToolName === 'point') {
+      return 'Point Circle';
+    } else if (drawingToolName === 'pointcross') {
+      return 'Point Cross';
+    } else if (drawingToolName === 'line') {
+      return 'Line';
+    } else if (drawingToolName === 'freehand') {
+      return 'Freehand';
+    } else if (drawingToolName === 'polygon') {
+      return 'Polygon';
+    } else if (drawingToolName === 'rect') {
+      return 'Rectangle';
+    } else if (drawingToolName === 'circle') {
+      return 'Circle';
+    } else if (drawingToolName === 'ellipse') {
+      return 'Ellipse';
+    } else {
+      return 'Point';
+    }
+  };
+
   useEffect(() => {
     const optionList = (
       <>
+        <ListItem>
+          <ListItemIcon>
+            <GestureIcon />
+          </ListItemIcon>
+          <ListItemText id="switchShowAnnotations" primary="Show Annotations" />
+          <Switch
+            edge="end"
+            onChange={handleShowAnnotations}
+            checked={showAnnotations}
+            inputProps={{
+              'aria-labelledby': 'switchShowAnnotations',
+            }}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <FormatColorTextIcon />
+          </ListItemIcon>
+          <ListItemText id="switchShowLabels" primary="Show Labels" />
+          <Switch
+            edge="end"
+            onChange={handleShowLabels}
+            checked={showLabels}
+            inputProps={{
+              'aria-labelledby': 'switchShowLabels',
+            }}
+          />
+        </ListItem>
         <ListItemButton
           onClick={() => {
             void handleSaveAndExit();
@@ -322,7 +388,7 @@ const ImageAnnotator = ({
         </ListItemButton>
         <ListItemButton
           onClick={() => {
-            void handleSaveNew();
+            void handleSave();
           }}
         >
           <ListItemIcon>
@@ -357,94 +423,69 @@ const ImageAnnotator = ({
         onChange={handleSetDrawingTool}
         sx={{ width: '100%' }}
       >
-        <ListItemButton
-          component={ToggleButton}
-          value={'point'}
-          sx={{ textTransform: 'none' }}
-        >
-          <ListItemIcon>
-            <GpsFixedIcon />
-          </ListItemIcon>
-          <ListItemText primary={'Point Circle'} />
-        </ListItemButton>
-        <ListItemButton
-          component={ToggleButton}
-          value={'pointcross'}
-          sx={{ textTransform: 'none' }}
-        >
-          <ListItemIcon>
-            <AddIcon />
-          </ListItemIcon>
-          <ListItemText primary={'Point Cross'} />
-        </ListItemButton>
-        <ListItemButton
-          component={ToggleButton}
-          value={'line'}
-          sx={{ textTransform: 'none' }}
-        >
-          <ListItemIcon>
-            <LinearScaleIcon />
-          </ListItemIcon>
-          <ListItemText primary={'Line'} />
-        </ListItemButton>
-        <ListItemButton
-          component={ToggleButton}
-          value={'freehand'}
-          sx={{ textTransform: 'none' }}
-        >
-          <ListItemIcon>
-            <GestureIcon />
-          </ListItemIcon>
-          <ListItemText primary={'Freehand'} />
-        </ListItemButton>
-        <ListItemButton
-          component={ToggleButton}
-          value={'polygon'}
-          sx={{ textTransform: 'none' }}
-        >
-          <ListItemIcon>
-            <PolylineIcon />
-          </ListItemIcon>
-          <ListItemText primary={'Polygon'} />
-        </ListItemButton>
-        <ListItemButton
-          component={ToggleButton}
-          value={'rect'}
-          sx={{ textTransform: 'none' }}
-        >
-          <ListItemIcon>
-            <Crop32Icon />
-          </ListItemIcon>
-          <ListItemText primary={'Rectangle'} />
-        </ListItemButton>
-        <ListItemButton
-          component={ToggleButton}
-          value={'circle'}
-          sx={{ textTransform: 'none' }}
-        >
-          <ListItemIcon>
-            <RadioButtonUncheckedIcon />
-          </ListItemIcon>
-          <ListItemText primary={'Circle'} />
-        </ListItemButton>
-        <ListItemButton
-          component={ToggleButton}
-          value={'ellipse'}
-          sx={{ textTransform: 'none' }}
-        >
-          <ListItemIcon>
-            <BlurCircularIcon />
-          </ListItemIcon>
-          <ListItemText primary={'Ellipse'} />
-        </ListItemButton>
+        {folderConfig?.drawingTools?.map((drawingToolItem) => (
+          <ListItemButton
+            key={drawingToolItem}
+            component={ToggleButton}
+            value={drawingToolItem}
+            sx={{ textTransform: 'none' }}
+          >
+            <ListItemIcon>{getDrawingToolIcon(drawingToolItem)}</ListItemIcon>
+            <ListItemText primary={getDrawingToolText(drawingToolItem)} />
+          </ListItemButton>
+        ))}
       </ToggleButtonGroup>
     );
 
-    setMenuButtons({ drawingToolList, optionList });
+    const configAnnotationList = (
+      <ToggleButtonGroup
+        orientation="vertical"
+        value={configAnnotation}
+        exclusive
+        onChange={handleSetConfigAnnotation}
+        sx={{ width: '100%' }}
+      >
+        {folderConfig?.configAnnotations?.map((configAnnotationItem) => (
+          <ListItemButton
+            key={configAnnotationItem.name}
+            component={ToggleButton}
+            value={configAnnotationItem}
+            sx={{ textTransform: 'none' }}
+          >
+            <ListItemIcon>
+              <ColorIcon colorName={configAnnotationItem.color} />
+            </ListItemIcon>
+            <ListItemText primary={configAnnotationItem.name} />
+          </ListItemButton>
+        ))}
+      </ToggleButtonGroup>
+    );
+
+    setMenuButtons({ drawingToolList, optionList, configAnnotationList });
+
+    annotations?.on('createSelection', async (selection) => {
+      selection.body = [
+        {
+          type: 'TextualBody',
+          purpose: 'tagging',
+          value: configAnnotation?.name,
+          color: configAnnotation?.color,
+        },
+      ];
+
+      await annotations.updateSelected(selection);
+    });
     return () => {
       setMenuButtons(null);
     };
-  }, [annotations, annotationCreated, drawingTool]);
+  }, [
+    annotations,
+    annotationCreated,
+    drawingTool,
+    configAnnotation,
+    showLabels,
+    showAnnotations,
+  ]);
 
   const handleSetDrawingTool = (
     event: React.MouseEvent<HTMLElement>,
@@ -456,6 +497,15 @@ const ImageAnnotator = ({
 
     // annotations.setDrawingEnabled(true);
     annotations.setDrawingTool(newDrawingTool);
+  };
+
+  const handleSetConfigAnnotation = (
+    event: React.MouseEvent<HTMLElement>,
+    newConfigAnnotation: IConfigAnnotation | null,
+  ): void => {
+    if (newConfigAnnotation === null) return;
+
+    setConfigAnnotation(newConfigAnnotation);
   };
 
   return (
@@ -490,6 +540,7 @@ ImageAnnotator.propTypes = {
   folderName: PropTypes.string,
   dicomUuid: PropTypes.string,
   isNewAnnotation: PropTypes.bool,
+  folderConfig: PropTypes.object,
 };
 
 export default ImageAnnotator;

@@ -8,10 +8,19 @@ import {
   Select,
   Box,
 } from '@mui/material';
-import PaletteIcon from '@mui/icons-material/Palette';
+import ColorIcon from '../Base/ColorIcon';
 
 const ColorSelector = ({ color, onChange }): JSX.Element => {
-  const colors = ['red', 'green', 'blue', 'purple', 'orange', 'yellow'];
+  const colors = [
+    'red',
+    'green',
+    'blue',
+    'purple',
+    'pink',
+    'turquoise',
+    'orange',
+    'yellow',
+  ];
 
   return (
     <>
@@ -32,7 +41,7 @@ const ColorSelector = ({ color, onChange }): JSX.Element => {
               justifyContent={'center'}
             >
               <ListItemIcon>
-                <PaletteIcon sx={{ color: colorItem }} />
+                <ColorIcon colorName={colorItem} />
               </ListItemIcon>
               <ListItemText>
                 {colorItem.charAt(0).toUpperCase() + colorItem.slice(1)}

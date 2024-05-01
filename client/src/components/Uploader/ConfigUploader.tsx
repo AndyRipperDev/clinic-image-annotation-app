@@ -41,8 +41,6 @@ const ConfigUploader = ({ folderName, onError }): JSX.Element => {
       );
 
       if (response.ok) {
-        const responseData = await response.json();
-        console.log(responseData);
         navigate(`/folders/${folderName}`);
       } else {
         const responseData = await response.json();
