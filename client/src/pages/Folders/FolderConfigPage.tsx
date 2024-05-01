@@ -10,15 +10,20 @@ import DownloadDoneOutlinedIcon from '@mui/icons-material/DownloadDoneOutlined';
 import ErrorAlert from '../../components/Feedback/ErrorAlert';
 import { LoadingButton } from '@mui/lab';
 import ConfigUploader from '../../components/Uploader/ConfigUploader';
+import type IFolderConfig from '../../interfaces/folderConfig';
+import CircularLoading from '../../components/Loadings/CircularLoading';
 
 const FolderConfigPage = (): JSX.Element => {
   const params = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingConfig, setIsLoadingConfig] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [configAnnotations, setConfigAnnotations] = useState<
     IConfigAnnotation[]
   >([]);
+  const [savedFolderConfig, setSavedFolderConfig] =
+    useState<IFolderConfig | null>(null);
 
   const [drawingTools, setDrawingTools] = useState(() => [
     'point',
@@ -35,18 +40,19 @@ const FolderConfigPage = (): JSX.Element => {
     let ignore = false;
 
     if (!ignore) {
-      setIsLoading(true);
+      setIsLoadingConfig(true);
 
       void fetch(
         `${process.env.BACKEND_API_URL}/folders/${params.folderName}/config`,
       )
         .then(async (response) => {
           if (response.status === 200) {
-            navigate(`/folders/${params.folderName}`);
+            const config = await response.json();
+            setSavedFolderConfig(config as IFolderConfig);
           }
         })
         .finally(() => {
-          setIsLoading(false);
+          setIsLoadingConfig(false);
         });
     }
 
@@ -113,111 +119,138 @@ const FolderConfigPage = (): JSX.Element => {
     <div>
       <Title text={`${params.folderName} Configuration`} textAlign={'left'} />
 
-      <Typography
-        sx={{
-          mt: 2,
-          mb: 4,
-        }}
-      >
-        You can configure annotations for this folder manually or you can import
-        already created configuration.
-      </Typography>
+      {isLoadingConfig ? (
+        <CircularLoading />
+      ) : (
+        <>
+          {savedFolderConfig === null && (
+            <>
+              {' '}
+              <Typography
+                sx={{
+                  mt: 2,
+                  mb: 4,
+                }}
+              >
+                You can configure annotations for this folder manually or you
+                can import already created configuration.
+              </Typography>
+              {errorMessage !== null && (
+                <ErrorAlert text={errorMessage} marginTop={4} />
+              )}
+              <Stack
+                component="section"
+                direction="row"
+                justifyContent="left"
+                alignItems="center"
+                sx={{
+                  mt: 4,
+                  pb: 2,
+                }}
+              >
+                <ButtonGroup variant="outlined">
+                  <ConfigUploader
+                    folderName={params.folderName}
+                    onError={handleUploadError}
+                  />
+                  <LoadingButton
+                    variant="outlined"
+                    color="primary"
+                    loading={isLoading}
+                    startIcon={<DownloadDoneOutlinedIcon />}
+                    onClick={() => {
+                      void handleSaveConfig();
+                    }}
+                  >
+                    Save current Configuration
+                  </LoadingButton>
+                </ButtonGroup>
+              </Stack>
+            </>
+          )}
 
-      {errorMessage !== null && (
-        <ErrorAlert text={errorMessage} marginTop={4} />
-      )}
-
-      <Stack
-        component="section"
-        direction="row"
-        justifyContent="left"
-        alignItems="center"
-        sx={{
-          mt: 4,
-          pb: 2,
-        }}
-      >
-        <ButtonGroup variant="outlined">
-          <ConfigUploader
-            folderName={params.folderName}
-            onError={handleUploadError}
-          />
-          <LoadingButton
-            variant="outlined"
-            color="primary"
-            loading={isLoading}
-            startIcon={<DownloadDoneOutlinedIcon />}
-            onClick={() => {
-              void handleSaveConfig();
+          <Divider
+            sx={{
+              mt: 4,
+              mb: 4,
             }}
-          >
-            Save current Configuration
-          </LoadingButton>
-        </ButtonGroup>
-      </Stack>
+          ></Divider>
 
-      <Divider
-        sx={{
-          mt: 4,
-          mb: 4,
-        }}
-      ></Divider>
+          <div>
+            <Typography
+              variant="h5"
+              component="h4"
+              sx={{
+                fontWeight: '700',
+                mt: 4,
+                mb: 2,
+              }}
+            >
+              {savedFolderConfig === null ? (
+                <>Drawing Tool Selection</>
+              ) : (
+                <>Selected Drawing Tools</>
+              )}
+            </Typography>
+            {savedFolderConfig === null && (
+              <Typography
+                sx={{
+                  mb: 2,
+                }}
+              >
+                All tools are selected in default.
+              </Typography>
+            )}
 
-      <div>
-        <Typography
-          variant="h5"
-          component="h4"
-          sx={{
-            fontWeight: '700',
-            mt: 4,
-            mb: 2,
-          }}
-        >
-          Drawing Tool Selection
-        </Typography>
-        <Typography
-          sx={{
-            mb: 2,
-          }}
-        >
-          All tools are selected in default.
-        </Typography>
+            <DrawingToolSelector
+              drawingTools={
+                savedFolderConfig === null
+                  ? drawingTools
+                  : savedFolderConfig.drawingTools
+              }
+              onChange={handleDrawingTools}
+              disabled={savedFolderConfig !== null}
+            />
+          </div>
 
-        <DrawingToolSelector
-          drawingTools={drawingTools}
-          onChange={handleDrawingTools}
-        />
-      </div>
-
-      <Divider
-        sx={{
-          mt: 4,
-          mb: 4,
-        }}
-      ></Divider>
-      <div>
-        <Typography
-          variant="h5"
-          component="h4"
-          sx={{
-            fontWeight: '700',
-            mb: 2,
-          }}
-        >
-          Annotation Configurations
-        </Typography>
-        <Typography
-          sx={{
-            mb: 2,
-          }}
-        >
-          Please add at least one annotation configuration.
-        </Typography>
-        <AnnotationConfigurationInput
-          configAnnotations={configAnnotations}
-          setConfigAnnotations={setConfigAnnotations}
-        />
-      </div>
+          <Divider
+            sx={{
+              mt: 4,
+              mb: 4,
+            }}
+          ></Divider>
+          <div>
+            <Typography
+              variant="h5"
+              component="h4"
+              sx={{
+                fontWeight: '700',
+                mb: 2,
+              }}
+            >
+              Annotation Configurations
+            </Typography>
+            {savedFolderConfig === null && (
+              <Typography
+                sx={{
+                  mb: 2,
+                }}
+              >
+                Please add at least one annotation configuration.
+              </Typography>
+            )}
+            <AnnotationConfigurationInput
+              configAnnotations={
+                savedFolderConfig === null
+                  ? configAnnotations
+                  : savedFolderConfig.configAnnotations
+              }
+              setConfigAnnotations={setConfigAnnotations}
+              disabled={savedFolderConfig !== null}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

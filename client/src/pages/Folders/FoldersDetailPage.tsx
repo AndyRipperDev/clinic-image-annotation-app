@@ -13,6 +13,7 @@ import ErrorAlert from '../../components/Feedback/ErrorAlert';
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 import CircularLoading from '../../components/Loadings/CircularLoading';
 import FolderConfigDownloader from '../../components/Downloader/FolderConfigDownloader';
+import DocumentScannerOutlinedIcon from '@mui/icons-material/DocumentScannerOutlined';
 
 const FoldersDetailPage = (): JSX.Element => {
   const params = useParams();
@@ -129,8 +130,16 @@ const FoldersDetailPage = (): JSX.Element => {
             </ButtonGroup>
             {hasConfig && (
               <ButtonGroup variant="outlined">
-                <FolderDownloader folderName={params.folderName} />
+                <Button
+                  variant="outlined"
+                  component={Link}
+                  to={`/folders/${params.folderName}/config`}
+                  startIcon={<DocumentScannerOutlinedIcon />}
+                >
+                  Show Configuration
+                </Button>
                 <FolderConfigDownloader folderName={params.folderName} />
+                <FolderDownloader folderName={params.folderName} />
               </ButtonGroup>
             )}
           </Stack>

@@ -1,14 +1,13 @@
-import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import React, { type ReactNode, useContext, useEffect, useState } from 'react';
 import OpenSeadragon, { SUBPIXEL_ROUNDING_OCCURRENCES } from 'openseadragon';
 import PropTypes from 'prop-types';
 import * as Annotorious from '@recogito/annotorious-openseadragon';
 import ShapeLabelsFormatter from '@recogito/annotorious-shape-labels';
-import Toolbar from '@recogito/annotorious-toolbar';
 // import SelectorPack from '@recogito/annotorious-selector-pack';
 import SelectorPack from '../../plugins/annotorious-selector-pack';
 import Alert from '@mui/material/Alert';
 import SaveIcon from '@mui/icons-material/Save';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MenuContext } from '../../context/MenuContext';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
@@ -16,7 +15,6 @@ import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
 import {
   Backdrop,
   CircularProgress,
-  List,
   ListItem,
   ListItemButton,
   ListItemIcon,
@@ -37,6 +35,7 @@ import AddIcon from '@mui/icons-material/Add';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import type IConfigAnnotation from '../../interfaces/configAnnotation';
 import ColorIcon from '../Base/ColorIcon';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const ImageAnnotator = ({
   buttonSrcUrl,
@@ -411,6 +410,12 @@ const ImageAnnotator = ({
             <DeleteForeverIcon />
           </ListItemIcon>
           <ListItemText primary={'Delete'} />
+        </ListItemButton>
+        <ListItemButton component={Link} to={`/folders/${folderName}`}>
+          <ListItemIcon>
+            <ExitToAppIcon />
+          </ListItemIcon>
+          <ListItemText primary="Exit" />
         </ListItemButton>
       </>
     );

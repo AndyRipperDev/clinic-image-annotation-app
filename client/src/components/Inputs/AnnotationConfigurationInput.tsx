@@ -22,6 +22,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 const AnnotationConfigurationInput = ({
   configAnnotations,
   setConfigAnnotations,
+  disabled = false,
 }): JSX.Element => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [annotationName, setAnnotationName] = useState<string>('');
@@ -56,18 +57,20 @@ const AnnotationConfigurationInput = ({
       width: 100,
       renderCell: ({ row }: Partial<GridRowParams>) => (
         <Stack direction="row" alignItems="center" spacing={1}>
-          <Tooltip title="Delete">
-            <IconButton
-              color="primary"
-              aria-label="delete"
-              size="large"
-              onClick={() => {
-                deleteAction(row);
-              }}
-            >
-              <DeleteOutlineIcon />
-            </IconButton>
-          </Tooltip>
+          {!disabled && (
+            <Tooltip title="Delete">
+              <IconButton
+                color="primary"
+                aria-label="delete"
+                size="large"
+                onClick={() => {
+                  deleteAction(row);
+                }}
+              >
+                <DeleteOutlineIcon />
+              </IconButton>
+            </Tooltip>
+          )}
         </Stack>
       ),
     },
@@ -113,32 +116,36 @@ const AnnotationConfigurationInput = ({
       {errorMessage !== null && (
         <ErrorAlert text={errorMessage} marginTop={4} />
       )}
-      <TextField
-        autoFocus
-        required
-        margin="dense"
-        id="annotationName"
-        name="annotationName"
-        label="Annotation Name"
-        type="text"
-        variant="standard"
-        sx={{ m: 1, mt: 2.1, width: '75ch' }}
-        value={annotationName}
-        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-          setAnnotationName(event.target.value);
-        }}
-      />
-      <FormControl variant="standard" required sx={{ m: 1, width: '25ch' }}>
-        <ColorSelector color={color} onChange={handleColorChange} />
-      </FormControl>
-      <Button
-        variant="outlined"
-        startIcon={<AddOutlinedIcon />}
-        sx={{ m: 1, mt: 3.5 }}
-        onClick={addAction}
-      >
-        Add
-      </Button>
+      {!disabled && (
+        <>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="annotationName"
+            name="annotationName"
+            label="Annotation Name"
+            type="text"
+            variant="standard"
+            sx={{ m: 1, mt: 2.1, width: '75ch' }}
+            value={annotationName}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setAnnotationName(event.target.value);
+            }}
+          />
+          <FormControl variant="standard" required sx={{ m: 1, width: '25ch' }}>
+            <ColorSelector color={color} onChange={handleColorChange} />
+          </FormControl>
+          <Button
+            variant="outlined"
+            startIcon={<AddOutlinedIcon />}
+            sx={{ m: 1, mt: 3.5 }}
+            onClick={addAction}
+          >
+            Add
+          </Button>
+        </>
+      )}
 
       {configAnnotations.length !== 0 && (
         <div style={{ width: '100%' }}>
@@ -164,6 +171,7 @@ const AnnotationConfigurationInput = ({
 AnnotationConfigurationInput.propTypes = {
   configAnnotations: PropTypes.array,
   setConfigAnnotations: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 export default AnnotationConfigurationInput;
