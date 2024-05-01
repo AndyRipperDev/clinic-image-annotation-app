@@ -73,6 +73,28 @@ const DicomFileInfoDataTable = ({ folderName, newData }): JSX.Element => {
       type: 'dateTime',
       width: 200,
       valueGetter: (value) => value && new Date(value),
+      valueFormatter: (value?: Date) => {
+        if (value == null) {
+          return '';
+        }
+
+        const dateOptions: Intl.DateTimeFormatOptions = {
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric',
+        };
+
+        const timeOptions: Intl.DateTimeFormatOptions = {
+          hour: 'numeric',
+          minute: 'numeric',
+          second: 'numeric',
+        };
+
+        const formattedDate = value.toLocaleDateString('cs-CZ', dateOptions);
+        const formattedTime = value.toLocaleTimeString('cs-CZ', timeOptions);
+
+        return `${formattedDate}, ${formattedTime}`;
+      },
     },
     {
       field: 'lastAnnotaionDate',
@@ -80,6 +102,28 @@ const DicomFileInfoDataTable = ({ folderName, newData }): JSX.Element => {
       type: 'dateTime',
       width: 200,
       valueGetter: (value) => value && new Date(value),
+      valueFormatter: (value?: Date) => {
+        if (value == null) {
+          return '';
+        }
+
+        const dateOptions: Intl.DateTimeFormatOptions = {
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric',
+        };
+
+        const timeOptions: Intl.DateTimeFormatOptions = {
+          hour: 'numeric',
+          minute: 'numeric',
+          second: 'numeric',
+        };
+
+        const formattedDate = value.toLocaleDateString('cs-CZ', dateOptions);
+        const formattedTime = value.toLocaleTimeString('cs-CZ', timeOptions);
+
+        return `${formattedDate}, ${formattedTime}`;
+      },
     },
     {
       field: 'action',
