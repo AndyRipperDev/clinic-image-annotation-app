@@ -17,7 +17,7 @@ const FolderConfigPage = (): JSX.Element => {
   const params = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isLoadingConfig, setIsLoadingConfig] = useState<boolean>(false);
+  const [isLoadingConfig, setIsLoadingConfig] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [configAnnotations, setConfigAnnotations] = useState<
     IConfigAnnotation[]

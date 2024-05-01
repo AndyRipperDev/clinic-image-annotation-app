@@ -150,6 +150,7 @@ const AnnotationConfigurationInput = ({
       {configAnnotations.length !== 0 && (
         <div style={{ width: '100%' }}>
           <DataGrid
+            columnVisibilityModel={{ action: !disabled }}
             sx={{ mt: 4 }}
             getRowId={(row) => row.name}
             rows={configAnnotations}

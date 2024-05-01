@@ -8,7 +8,7 @@ const AnnotationPage = (): JSX.Element => {
   const navigate = useNavigate();
   const params = useParams();
   const [isNewAnnotation, setIsNewAnnotation] = useState<boolean>(true);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasDziImagesReady, setHasDziImagesReady] = useState<boolean>(false);
   const [folderConfig, setFolderConfig] = useState<IFolderConfig | null>(null);
 

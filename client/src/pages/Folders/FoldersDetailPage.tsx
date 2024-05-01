@@ -19,7 +19,7 @@ import { type IDicomFileInfo } from '../../interfaces/dicomFileInfo';
 const FoldersDetailPage = (): JSX.Element => {
   const params = useParams();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasConfig, setHasConfig] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [newDicomFilesInfo, setnewDicomFilesInfo] = useState<IDicomFileInfo[]>(

@@ -35,7 +35,7 @@ const fetchDicomFilesInfo = async (
 
 const DicomFileInfoDataTable = ({ folderName, newData }): JSX.Element => {
   const [dicomFilesInfo, setDicomFilesInfo] = useState<IDicomFileInfo[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 

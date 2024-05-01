@@ -30,7 +30,7 @@ const fetchFolders = async (): Promise<IFolder[]> => {
 
 const FoldersDataTable = (): JSX.Element => {
   const [folders, setFolders] = useState<IFolder[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
