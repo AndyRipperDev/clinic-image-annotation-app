@@ -40,23 +40,6 @@ const getDicomFilesInfo = async (dicomPath) => {
       const uuidDicomPath = path.join(dicomPath, uuidFolder);
 
       return await getDicomFileInfo(uuidDicomPath);
-
-      // const files = await fs.readdir(uuidDicomPath);
-
-      // if (files.length === 1 && files[0].endsWith(".dcm")) {
-      //   const fileName = files[0];
-      //   const filePath = path.join(uuidDicomPath, fileName);
-      //   const stats = await fs.stat(filePath);
-
-      //   return {
-      //     uuid: uuidFolder,
-      //     fileName: fileName,
-      //     created: stats.birthtime,
-      //     changed: stats.mtime,
-      //   };
-      // } else {
-      //   return null;
-      // }
     })
   );
 

@@ -39,8 +39,7 @@ router.get("/", async (req, res) => {
 
     res.status(200).json(foldersInfo);
   } catch (err) {
-    console.error("Error reading directory:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -69,8 +68,7 @@ router.post("/", async (req, res) => {
 
     res.status(201).json(folderInfo);
   } catch (err) {
-    console.error("Error creating folder:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -90,8 +88,7 @@ router.get("/:folderName", async (req, res) => {
 
     res.status(200).json(folderInfo);
   } catch (err) {
-    console.error("Error retrieving folder information:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -102,7 +99,6 @@ router.get("/:folderName/download", async (req, res) => {
   const { folderName } = req.params;
   const folderPath = path.join(directoryPath, folderName);
 
-  // Recursive function to get all files in a directory
   const getFilesInDirectory = async (dir, fileList = []) => {
     const files = await fs.readdir(dir);
 
@@ -120,17 +116,8 @@ router.get("/:folderName/download", async (req, res) => {
     return fileList;
   };
 
-  // Get all files in the directory
   const files = await getFilesInDirectory(folderPath);
 
-  // Append each file to the zip file
-  // for (let filePath of files) {
-  //   const fileContent = await fs.readFile(filePath);
-  //   const zipPath = path.relative(folderPath, filePath);
-  //   zip.file(zipPath, fileContent);
-  // }
-
-  // Append each file to the zip file
   for (let filePath of files) {
     const fileContent = await fs.readFile(filePath);
     const zipPath = path.join(folderName, path.relative(folderPath, filePath));
@@ -142,7 +129,6 @@ router.get("/:folderName/download", async (req, res) => {
     });
   }
 
-  // Generate zip file and send it
   zip
     .generateNodeStream({ type: "nodebuffer", streamFiles: true })
     .pipe(res.attachment(`${folderName}.zip`));
@@ -172,8 +158,7 @@ router.put("/:folderName", async (req, res) => {
 
     res.status(200).json(folderInfo);
   } catch (err) {
-    console.error("Error renaming folder:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -193,8 +178,7 @@ router.delete("/:folderName", async (req, res) => {
 
     res.status(200).json({ message: "Folder deleted successfully" });
   } catch (err) {
-    console.error("Error deleting folder:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -224,7 +208,7 @@ router.get("/:folderName/config", async (req, res) => {
 
     res.status(200).json(config);
   } catch (err) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -251,7 +235,7 @@ router.get("/:folderName/config/download", async (req, res) => {
 
     res.download(configPath);
   } catch (err) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -294,7 +278,7 @@ router.post("/:folderName/config", async (req, res) => {
 
     res.status(201).json(configData);
   } catch (err) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -327,7 +311,7 @@ router.post(
 
       res.status(201).json(config);
     } catch (err) {
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: err });
     }
   }
 );
@@ -349,8 +333,7 @@ router.get("/:folderName/dicom", async (req, res) => {
 
     res.status(200).json(dicomFilesInfo);
   } catch (err) {
-    console.error("Error retrieving DICOM information:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -380,8 +363,7 @@ router.post(
         res.status(500).json({ error: extractionResult.errors });
       }
     } catch (error) {
-      console.error("Error uploading DICOM files", error);
-      res.status(500).json({ error: `Error uploading DICOM files: ${error}` });
+      res.status(500).json({ error: error });
     }
   }
 );
@@ -414,8 +396,7 @@ router.get("/:folderName/dicom/:dicomUuid/download", async (req, res) => {
     const downloadFile = path.resolve(dicomPath, dicomFile.fileName);
     res.download(downloadFile);
   } catch (err) {
-    console.error("Error downloading DICOM file:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -453,8 +434,7 @@ router.delete("/:folderName/dicom/:dicomUuid", async (req, res) => {
 
     res.status(200).json({ message: "DICOM file deleted successfully" });
   } catch (err) {
-    console.error("Error deleting DICOM file:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -502,8 +482,7 @@ router.post("/:folderName/annotations", async (req, res) => {
       res.status(500).json({ error: "Error while creating annotation" });
     }
   } catch (err) {
-    console.error("Error retrieving annotation:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -538,8 +517,7 @@ router.get("/:folderName/annotations/:dicomUuid", async (req, res) => {
       res.status(500).json({ error: annotationResult.error });
     }
   } catch (err) {
-    console.error("Error retrieving annotation:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -568,8 +546,7 @@ router.get("/:folderName/annotations/:dicomUuid/download", async (req, res) => {
 
     res.download(annotationFilePath);
   } catch (err) {
-    console.error("Error downloading annotation:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -607,8 +584,7 @@ router.put("/:folderName/annotations/:dicomUuid", async (req, res) => {
       res.status(500).json({ error: "Error while updating annotation" });
     }
   } catch (err) {
-    console.error("Error retrieving annotation:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -639,8 +615,7 @@ router.delete("/:folderName/annotations/:dicomUuid", async (req, res) => {
 
     res.status(200).json({ message: "Annotation deleted successfully" });
   } catch (err) {
-    console.error("Error retrieving annotation:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: err });
   }
 });
 
