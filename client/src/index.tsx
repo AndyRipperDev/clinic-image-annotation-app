@@ -8,13 +8,15 @@ import '@recogito/annotorious-openseadragon/dist/annotorious.min.css';
 import './index.css';
 import App from './App';
 import HomePage from './pages/Home/HomePage';
-import Test, { loader as testLoader } from './components/Test';
+import FoldersPage from './pages/Folders/FoldersPage';
+import FolderConfigPage from './pages/Folders/FolderConfigPage';
+import FoldersDetailPage from './pages/Folders/FoldersDetailPage';
 import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
 } from 'react-router-dom';
-import EditorPage from './pages/Editor/EditorPage';
+import AnnotationPage from './pages/Annotations/AnnotationPage';
 
 const router = createBrowserRouter([
   {
@@ -26,13 +28,20 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: 'test',
-        element: <Test />,
-        loader: testLoader,
+        path: 'folders/',
+        element: <FoldersPage />,
       },
       {
-        path: 'editor',
-        element: <EditorPage />,
+        path: 'folders/:folderName',
+        element: <FoldersDetailPage />,
+      },
+      {
+        path: 'folders/:folderName/config',
+        element: <FolderConfigPage />,
+      },
+      {
+        path: 'folders/:folderName/annotations/:dicomUuid',
+        element: <AnnotationPage />,
       },
     ],
   },

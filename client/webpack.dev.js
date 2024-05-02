@@ -5,4 +5,7 @@ module.exports = merge(webpackConfig, {
   mode: 'development',
   entry: './src/index.tsx',
   devtool: 'source-map',
+  devServer: {
+    historyApiFallback: true,
+  },
 });

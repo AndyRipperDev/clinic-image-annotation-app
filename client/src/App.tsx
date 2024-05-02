@@ -1,9 +1,9 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import type {} from '@mui/lab/themeAugmentation';
+import Menu from './components/Menu/Menu';
 
 const App = (): JSX.Element => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -29,10 +29,8 @@ const App = (): JSX.Element => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <main>
-        <Outlet />
-      </main>
+      <CssBaseline enableColorScheme />
+      <Menu />
     </ThemeProvider>
   );
 };
