@@ -54,7 +54,8 @@ const convertDicomToDzi = async (
         channels: 4,
       },
     })
-      .toColourspace("rgb16")
+      // .toColourspace("rgb16")
+      .toColourspace("grey16")
       .png()
       .tile({
         overlap: overlap,

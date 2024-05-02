@@ -163,7 +163,6 @@ const DicomFileInfoDataTable = ({ folderName, newData }): JSX.Element => {
   ];
 
   useEffect(() => {
-    console.log('bum');
     async function fetchData(): Promise<void> {
       try {
         setIsLoading(true);
