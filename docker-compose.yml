@@ -1,0 +1,23 @@
+version: '3'
+services:
+  server:
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: server-nodejs-container
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001 
+    volumes:
+      - ./server/data:/usr/src/app/data 
+  client:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: client-react-container
+    ports:
+      - "80:80"
+    environment:
+      - BACKEND_API_URL=http://server:3001
+    stdin_open: true
